@@ -125,20 +125,7 @@ struct EssEff : Module {
 };
 
 std::string EssEff::getAbsolutePath(std::string path){
-    #if defined ARCH_LIN || defined ARCH_MAC
-        char buf[PATH_MAX];
-        char *absPathC = realpath(path.c_str(), buf);
-        if (absPathC)
-            return absPathC;
-    #elif defined ARCH_WIN
-        std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> converter;
-        std::wstring pathW = converter.from_bytes(path);
-        wchar_t buf[PATH_MAX];
-        wchar_t *absPathC = _wfullpath(buf, pathW.c_str(), PATH_MAX);
-        if (absPathC)
-            return string::fromWstring(absPathC);
-    #endif
-    return "";
+    return system::getCanonical(path);
 }
 
 void EssEff::loadFile(std::string path){
