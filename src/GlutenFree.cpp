@@ -14,49 +14,6 @@
 using namespace std;
 #define HISTORY_SIZE (1<<21)
 
-/*
-Display
-*/
-
-struct GlutenFreeSmallStringDisplayWidget : TransparentWidget {
-
-  std::string *value;
-
-  void draw(NVGcontext *vg) override
-  {
-
-    // Shadow
-    NVGcolor backgroundColorS = nvgRGB(0xA0, 0xA0, 0xA0);
-    nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y + 2.0, 4.0);
-    nvgFillColor(vg, backgroundColorS);
-    nvgFill(vg);
-
-    // Background
-    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
-    nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-    nvgFillColor(vg, backgroundColor);
-    nvgFill(vg);
-
-    // text
-    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
-    if (font) {
-    nvgFontSize(vg, 16);
-    nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 0.4);
-    }
-
-    std::stringstream to_display;
-    to_display << std::setw(3) << *value;
-
-    Vec textPos = Vec(12.0f, 28.0f);
-    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
-  }
-};
-
 struct GlutenFreeRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     GlutenFreeRoundLargeBlackKnob()
@@ -208,6 +165,53 @@ struct GlutenFree : Module {
 };
 
 /*
+Display
+*/
+
+struct GlutenFreeSmallStringDisplayWidget : TransparentWidget {
+
+  GlutenFree *module;
+
+  void draw(NVGcontext *vg) override
+  {
+
+    // Shadow
+    NVGcolor backgroundColorS = nvgRGB(0xA0, 0xA0, 0xA0);
+    nvgBeginPath(vg);
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y + 2.0, 4.0);
+    nvgFillColor(vg, backgroundColorS);
+    nvgFill(vg);
+
+    // Background
+    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
+    nvgBeginPath(vg);
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+    nvgFillColor(vg, backgroundColor);
+    nvgFill(vg);
+
+    // text
+    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
+    if (font) {
+    nvgFontSize(vg, 16);
+    nvgFontFaceId(vg, font->handle);
+    nvgTextLetterSpacing(vg, 0.4);
+    }
+
+    std::stringstream to_display;
+    if (module) {
+        to_display << std::setw(3) << module->voice_display;
+    } else {
+        to_display << std::setw(3) << "Load! ->";
+    }
+
+    Vec textPos = Vec(12.0f, 28.0f);
+    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
+    nvgFillColor(vg, textColor);
+    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+  }
+};
+
+/*
 Button
 */
 
@@ -249,13 +253,11 @@ struct GlutenFreeWidget : ModuleWidget {
     addChild(panel);
 
     // Displays
-    if(module != NULL){
-        GlutenFreeSmallStringDisplayWidget *fileDisplay = new GlutenFreeSmallStringDisplayWidget();
-        fileDisplay->box.pos = Vec(20, 50);
-        fileDisplay->box.size = Vec(70, 40);
-        fileDisplay->value = &module->voice_display;
-        addChild(fileDisplay);
-    }
+    GlutenFreeSmallStringDisplayWidget *fileDisplay = new GlutenFreeSmallStringDisplayWidget();
+    fileDisplay->box.pos = Vec(20, 50);
+    fileDisplay->box.size = Vec(70, 40);
+    fileDisplay->module = module;
+    addChild(fileDisplay);
 
     // Knobs
     int LEFT = 22;

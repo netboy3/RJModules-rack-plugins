@@ -5,36 +5,6 @@
 #include <sstream>
 #include <iomanip>
 
-// Displays
-struct SmallStringDisplayWidget : TransparentWidget {
-  std::string *value;
-
-  void draw(NVGcontext *vg) override
-  {
-    // Background
-    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
-    nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-    nvgFillColor(vg, backgroundColor);
-    nvgFill(vg);
-
-    // text
-	std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
-  if (font) {
-    nvgFontSize(vg, 13);
-    nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 2);
-}
-    std::stringstream to_display;
-    to_display << std::setw(3) << *value;
-
-    Vec textPos = Vec(4.0f, 20.0f);
-    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
-  }
-};
-
 struct TinySnapKnob : RoundSmallBlackKnob
 {
     TinySnapKnob()
@@ -383,6 +353,40 @@ struct ChordSeq : Module {
 	}
 };
 
+// Displays
+struct ChordSeqDisplayWidget : TransparentWidget {
+	ChordSeq *module;
+	int display_num;
+
+	void draw(NVGcontext *vg) override {
+		// Background
+		NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
+		nvgBeginPath(vg);
+		nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+		nvgFillColor(vg, backgroundColor);
+		nvgFill(vg);
+
+		// text
+		std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
+		if (font) {
+			nvgFontSize(vg, 13);
+			nvgFontFaceId(vg, font->handle);
+			nvgTextLetterSpacing(vg, 2);
+		}
+
+		std::stringstream to_display;
+		if (module) {
+			to_display << std::setw(3) << module->chord_values[display_num];
+		} else {
+			to_display << std::setw(3) << "CM";
+		}
+
+		Vec textPos = Vec(4.0f, 20.0f);
+		NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
+		nvgFillColor(vg, textColor);
+		nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+	}
+};
 
 struct ChordSeqWidget : ModuleWidget {
 	ChordSeqWidget(ChordSeq *module) {
@@ -415,21 +419,20 @@ struct ChordSeqWidget : ModuleWidget {
 		addOutput(createOutput<PJ301MPort>(Vec(portX[6]-1, 98), module, ChordSeq::ROW2_OUTPUT));
 		addOutput(createOutput<PJ301MPort>(Vec(portX[7]-1, 98), module, ChordSeq::ROW3_OUTPUT));
 
-		if(module != NULL){
-			SmallStringDisplayWidget *display = new SmallStringDisplayWidget();
-			for (int i = 0; i < 8; i++) {
-			    display = new SmallStringDisplayWidget();
-			    display->box.pos = Vec(portX[i]-10, 157);
-			    display->box.size = Vec(45, 30);
-			    display->value = &module->chord_values[i];
-			    addChild(display);
+		ChordSeqDisplayWidget *display = new ChordSeqDisplayWidget();
+		for (int i = 0; i < 8; i++) {
+			display = new ChordSeqDisplayWidget();
+			display->box.pos = Vec(portX[i]-10, 157);
+			display->box.size = Vec(45, 30);
+			display->module = module;
+			display->display_num = i;
+			addChild(display);
 
-				addParam(createParam<RoundBlackSnapKnob>(Vec(portX[i]-2, 198), module, ChordSeq::ROW2_PARAM + i));
-				addParam(createParam<RoundBlackSnapKnob>(Vec(portX[i]-2, 240), module, ChordSeq::ROW3_PARAM + i));
-				addParam(createParam<LEDButton>(Vec(portX[i]+2, 278-1), module, ChordSeq::GATE_PARAM + i));
-				addChild(createLight<MediumLight<GreenLight>>(Vec(portX[i]+6.4f, 281.4f), module, ChordSeq::GATE_LIGHTS + i));
-				addOutput(createOutput<PJ301MPort>(Vec(portX[i]-1, 307), module, ChordSeq::GATE_OUTPUT + i));
-			}
+			addParam(createParam<RoundBlackSnapKnob>(Vec(portX[i]-2, 198), module, ChordSeq::ROW2_PARAM + i));
+			addParam(createParam<RoundBlackSnapKnob>(Vec(portX[i]-2, 240), module, ChordSeq::ROW3_PARAM + i));
+			addParam(createParam<LEDButton>(Vec(portX[i]+2, 278-1), module, ChordSeq::GATE_PARAM + i));
+			addChild(createLight<MediumLight<GreenLight>>(Vec(portX[i]+6.4f, 281.4f), module, ChordSeq::GATE_LIGHTS + i));
+			addOutput(createOutput<PJ301MPort>(Vec(portX[i]-1, 307), module, ChordSeq::GATE_OUTPUT + i));
 		}
 	}
 };

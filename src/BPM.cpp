@@ -59,11 +59,11 @@ struct BigOlLight : BASE {
         }
 };
 
-struct NumberDisplayWidget : TransparentWidget {
+struct BPMDisplayWidget : TransparentWidget {
 
-  int *value;
+  BPM *module;
 
-  NumberDisplayWidget() {
+  BPMDisplayWidget() {
   };
 
   void draw(NVGcontext *vg) override
@@ -85,7 +85,11 @@ struct NumberDisplayWidget : TransparentWidget {
     }
 
     std::stringstream to_display;
-    to_display << std::setw(3) << (int) *value;
+    if (module) {
+        to_display << std::setw(3) << (int) module->m_fBPM;
+    } else {
+        to_display << std::setw(3) << 133;
+    }
 
     Vec textPos = Vec(16.0f, 33.0f);
     NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
@@ -188,13 +192,11 @@ BPMWidget::BPMWidget(BPM *module) {
     // addChild(createLight<LargeLight<GreenLight>>(Vec(28, 130), module, BPM::PULSE_LIGHT));
     //addChild(createLight<BigOlLight<GreenLight>>(Vec(25, 70), module, BPM::RESET_LIGHT));
 
-    if(module != NULL){
-        NumberDisplayWidget *display = new NumberDisplayWidget();
-        display->box.pos = Vec(28, 70);
-        display->box.size = Vec(100, 40);
-        display->value = &module->m_fBPM;
-        addChild(display);
-    }
+    BPMDisplayWidget *display = new BPMDisplayWidget();
+    display->box.pos = Vec(28, 70);
+    display->box.size = Vec(100, 40);
+    display->module = module;
+    addChild(display);
 }
 
 Model *modelBPM = createModel<BPM, BPMWidget>("BPM");

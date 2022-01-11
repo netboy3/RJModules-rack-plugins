@@ -23,38 +23,6 @@ std::string soundfont_files[2] = {
     "soundfonts/8bit.sf2"
 };
 
-/*
-Display
-*/
-
-struct EssEffSmallStringDisplayWidget : TransparentWidget {
-  std::string *value;
-  void draw(NVGcontext *vg) override
-  {
-    // Background
-    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
-    nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-    nvgFillColor(vg, backgroundColor);
-    nvgFill(vg);
-
-    // text
-    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
-    if (font) {
-    nvgFontSize(vg, 20);
-    nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 0.4);
-    }
-
-    std::stringstream to_display;
-    to_display << std::setw(3) << *value;
-
-    Vec textPos = Vec(12.0f, 28.0f);
-    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
-  }
-};
 
 /*
 Widget
@@ -103,8 +71,10 @@ struct EssEff : Module {
     int current;
     bool crossfade = false;
 
-    std::string file_name = "Hello!";
-    std::string preset_name = "Hello!";
+    std::map<std::string, std::string> display_data {
+        {"file_name", "Hello!"},
+        {"preset_name", "Hello!"}
+    };
     std::string last_path = "";
 
     dsp::SchmittTrigger gateTrigger;
@@ -148,9 +118,7 @@ void EssEff::loadFile(std::string path){
     this->loading = false;
     this->output_set = true;
 
-    std::string path_str(path);
-    path_str = path_str.substr(path_str.length()-12, path_str.length()-1);
-    this->file_name = path_str;
+    this->display_data["file_name"] = system::getStem(path).substr(0, 11);
 
 }
 
@@ -197,7 +165,7 @@ void EssEff::step() {
         }
 
         std::string preset_name_str(tsf_get_presetname(tee_ess_eff, preset_sel));
-        preset_name = preset_name_str.substr(0, 11);
+        display_data["preset_name"] = preset_name_str.substr(0, 11);
 
         // Render
         if (gateTrigger.process(inputs[GATE_INPUT].value)) {
@@ -254,6 +222,44 @@ void EssEff::step() {
 }
 
 /*
+Display
+*/
+
+struct EssEffSmallStringDisplayWidget : TransparentWidget {
+    EssEff *module;
+    std::string display_type;
+
+    void draw(NVGcontext *vg) override {
+        // Background
+        NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
+        nvgBeginPath(vg);
+        nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+        nvgFillColor(vg, backgroundColor);
+        nvgFill(vg);
+
+        // text
+        std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
+        if (font) {
+            nvgFontSize(vg, 20);
+            nvgFontFaceId(vg, font->handle);
+            nvgTextLetterSpacing(vg, 0.4);
+        }
+
+        std::stringstream to_display;
+        if (module) {
+            to_display << std::setw(3) << module->display_data[display_type];
+        } else {
+            to_display << std::setw(3) << "Grand_Piano";
+        }
+
+        Vec textPos = Vec(5.0f, 28.0f);
+        NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
+        nvgFillColor(vg, textColor);
+        nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+    }
+};
+
+/*
 Button
 */
 
@@ -302,19 +308,19 @@ EssEffWidget::EssEffWidget(EssEff *module) {
     addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 
     // Displays
-    if(module != NULL){
-        EssEffSmallStringDisplayWidget *fileDisplay = new EssEffSmallStringDisplayWidget();
-        fileDisplay->box.pos = Vec(28, 70);
-        fileDisplay->box.size = Vec(100, 40);
-        fileDisplay->value = &module->file_name;
-        addChild(fileDisplay);
+    EssEffSmallStringDisplayWidget *fileDisplay = new EssEffSmallStringDisplayWidget();
+    fileDisplay->box.pos = Vec(28, 70);
+    fileDisplay->box.size = Vec(100, 40);
+    fileDisplay->display_type = "file_name";
+    fileDisplay->module = module;
+    addChild(fileDisplay);
 
-        EssEffSmallStringDisplayWidget *presetDisplay = new EssEffSmallStringDisplayWidget();
-        presetDisplay->box.pos = Vec(28, 170);
-        presetDisplay->box.size = Vec(100, 40);
-        presetDisplay->value = &module->preset_name;
-        addChild(presetDisplay);
-    }
+    EssEffSmallStringDisplayWidget *presetDisplay = new EssEffSmallStringDisplayWidget();
+    presetDisplay->box.pos = Vec(28, 170);
+    presetDisplay->box.size = Vec(100, 40);
+    presetDisplay->display_type = "preset_name";
+    presetDisplay->module = module;
+    addChild(presetDisplay);
 
     // Knobs
     addParam(createParam<RoundBlackSnapKnob>(Vec(85, 115), module, EssEff::FILE_PARAM));

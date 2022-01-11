@@ -6,38 +6,6 @@
 #include <iomanip>
 #include "RJModules.hpp"
 
-
-// Displays
-struct StringDisplayWidget : TransparentWidget {
-
-  std::string *value;
-
-  void draw(NVGcontext *vg) override
-  {
-    // Background
-    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
-    nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-    nvgFillColor(vg, backgroundColor);
-    nvgFill(vg);
-
-    // text
-    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
-    if (font) {
-    nvgFontSize(vg, 24);
-    nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 2.5);
-    }
-    std::stringstream to_display;
-    to_display << std::setw(3) << *value;
-
-    Vec textPos = Vec(16.0f, 33.0f);
-    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
-  }
-};
-
 struct LargeSnapKnob : RoundHugeBlackKnob
 {
     LargeSnapKnob()
@@ -250,6 +218,41 @@ void Chord::step() {
 
 }
 
+// Displays
+struct ChordDisplayWidget : TransparentWidget {
+
+  Chord *module;
+
+  void draw(NVGcontext *vg) override
+  {
+    // Background
+    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
+    nvgBeginPath(vg);
+    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+    nvgFillColor(vg, backgroundColor);
+    nvgFill(vg);
+
+    // text
+    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Pokemon.ttf"));
+    if (font) {
+    nvgFontSize(vg, 24);
+    nvgFontFaceId(vg, font->handle);
+    nvgTextLetterSpacing(vg, 2.5);
+    }
+    std::stringstream to_display;
+    if (module) {
+        to_display << std::setw(3) << module->chord_name;
+    } else {
+        to_display << std::setw(3) << "C2Maj";
+    }
+
+    Vec textPos = Vec(16.0f, 33.0f);
+    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
+    nvgFillColor(vg, textColor);
+    nvgText(vg, textPos.x, textPos.y, to_display.str().c_str(), NULL);
+  }
+};
+
 struct ChordWidget: ModuleWidget {
     ChordWidget(Chord *module);
 };
@@ -281,13 +284,11 @@ ChordWidget::ChordWidget(Chord *module) {
     addOutput(createOutput<PJ301MPort>(Vec(81, 319), module, Chord::FIVE_OUTPUT));
     addOutput(createOutput<PJ301MPort>(Vec(114, 319), module, Chord::SEVEN_OUTPUT));
 
-    if(module != NULL){
-        StringDisplayWidget *display = new StringDisplayWidget();
-        display->box.pos = Vec(28, 70);
-        display->box.size = Vec(100, 40);
-        display->value = &module->chord_name;
-        addChild(display);
-    }
+    ChordDisplayWidget *display = new ChordDisplayWidget();
+    display->box.pos = Vec(28, 70);
+    display->box.size = Vec(100, 40);
+    display->module = module;
+    addChild(display);
 
 }
 Model *modelChord = createModel<Chord, ChordWidget>("Chord");

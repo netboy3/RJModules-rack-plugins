@@ -314,18 +314,19 @@ struct MegaDividerSmallStringDisplayWidget : TransparentWidget {
     nvgTextLetterSpacing(vg, 0.4);
     }
 
-    if (!module)
-        return;
-
     std::stringstream to_display;
-    if(is_a){
-        to_display << std::setw(2) << std::to_string(module->a_display);
-    } else if (is_b){
-        to_display << std::setw(2) << std::to_string(module->b_display);
-    } else if (is_c){
-        to_display << std::setw(2) << std::to_string(module->c_display);
-    } else if (is_d){
-        to_display << std::setw(2) << std::to_string(module->d_display);
+    if (module) {
+      if(is_a){
+          to_display << std::setw(2) << std::to_string(module->a_display);
+      } else if (is_b){
+          to_display << std::setw(2) << std::to_string(module->b_display);
+      } else if (is_c){
+          to_display << std::setw(2) << std::to_string(module->c_display);
+      } else if (is_d){
+          to_display << std::setw(2) << std::to_string(module->d_display);
+      }
+    } else {
+      to_display << std::setw(2) << "3";
     }
 
     Vec textPos = Vec(6.0f, 24.0f);
@@ -360,35 +361,28 @@ struct MegaDividerWidget: ModuleWidget {
             addChild(panel);
         }
 
-        if (!module)
-            return;
-
         // Displays
-        if(module != NULL){
-            MegaDividerSmallStringDisplayWidget *a_Display = new MegaDividerSmallStringDisplayWidget();
-            a_Display->box.pos = Vec(108, 36);
-            a_Display->box.size = Vec(33, 33);
-            a_Display->module = module;
-            a_Display->is_a = true;
-            a_Display->is_b = false;
-            a_Display->is_c = false;
-            a_Display->is_d = false;
-            addChild(a_Display);
-        }
+        MegaDividerSmallStringDisplayWidget *a_Display = new MegaDividerSmallStringDisplayWidget();
+        a_Display->box.pos = Vec(108, 36);
+        a_Display->box.size = Vec(33, 33);
+        a_Display->module = module;
+        a_Display->is_a = true;
+        a_Display->is_b = false;
+        a_Display->is_c = false;
+        a_Display->is_d = false;
+        addChild(a_Display);
         addParam(createParam<MegaDividerRoundSmallBlackKnob>(Vec(145, 40), module, MegaDivider::A_PARAM));
         addInput(createInput<PJ301MPort>(Vec(170, 39), module, MegaDivider::A_CV));
 
-        if(module != NULL){
-            MegaDividerSmallStringDisplayWidget *b_Display = new MegaDividerSmallStringDisplayWidget();
-            b_Display->box.pos = Vec(200, 36);
-            b_Display->box.size = Vec(33, 33);
-            b_Display->module = module;
-            b_Display->is_a = false;
-            b_Display->is_b = true;
-            b_Display->is_c = false;
-            b_Display->is_d = false;
-            addChild(b_Display);
-        }
+        MegaDividerSmallStringDisplayWidget *b_Display = new MegaDividerSmallStringDisplayWidget();
+        b_Display->box.pos = Vec(200, 36);
+        b_Display->box.size = Vec(33, 33);
+        b_Display->module = module;
+        b_Display->is_a = false;
+        b_Display->is_b = true;
+        b_Display->is_c = false;
+        b_Display->is_d = false;
+        addChild(b_Display);
 
         addParam(createParam<MegaDividerRoundSmallBlackKnob>(Vec(237, 40), module, MegaDivider::B_PARAM));
         addInput(createInput<PJ301MPort>(Vec(262, 39), module, MegaDivider::B_CV));
@@ -397,31 +391,27 @@ struct MegaDividerWidget: ModuleWidget {
 
         // Row 2
         int ROW_TWO = 42;
-        if(module != NULL){
-            MegaDividerSmallStringDisplayWidget *c_Display = new MegaDividerSmallStringDisplayWidget();
-            c_Display->box.pos = Vec(108, 36 + ROW_TWO);
-            c_Display->box.size = Vec(33, 33);
-            c_Display->module = module;
-            c_Display->is_a = false;
-            c_Display->is_b = false;
-            c_Display->is_c = true;
-            c_Display->is_d = false;
-            addChild(c_Display);
-        }
+        MegaDividerSmallStringDisplayWidget *c_Display = new MegaDividerSmallStringDisplayWidget();
+        c_Display->box.pos = Vec(108, 36 + ROW_TWO);
+        c_Display->box.size = Vec(33, 33);
+        c_Display->module = module;
+        c_Display->is_a = false;
+        c_Display->is_b = false;
+        c_Display->is_c = true;
+        c_Display->is_d = false;
+        addChild(c_Display);
         addParam(createParam<MegaDividerRoundSmallBlackKnob>(Vec(145, 40 + ROW_TWO), module, MegaDivider::C_PARAM));
         addInput(createInput<PJ301MPort>(Vec(170, 39 + ROW_TWO), module, MegaDivider::C_CV));
 
-        if(module != NULL){
-            MegaDividerSmallStringDisplayWidget *d_Display = new MegaDividerSmallStringDisplayWidget();
-            d_Display->box.pos = Vec(200, 36 + ROW_TWO);
-            d_Display->box.size = Vec(33, 33);
-            d_Display->module = module;
-            d_Display->is_a = false;
-            d_Display->is_b = false;
-            d_Display->is_c = false;
-            d_Display->is_d = true;
-            addChild(d_Display);
-        }
+        MegaDividerSmallStringDisplayWidget *d_Display = new MegaDividerSmallStringDisplayWidget();
+        d_Display->box.pos = Vec(200, 36 + ROW_TWO);
+        d_Display->box.size = Vec(33, 33);
+        d_Display->module = module;
+        d_Display->is_a = false;
+        d_Display->is_b = false;
+        d_Display->is_c = false;
+        d_Display->is_d = true;
+        addChild(d_Display);
 
         addParam(createParam<MegaDividerRoundSmallBlackKnob>(Vec(237, 40 + ROW_TWO), module, MegaDivider::D_PARAM));
         addInput(createInput<PJ301MPort>(Vec(262, 39 + ROW_TWO), module, MegaDivider::D_CV));

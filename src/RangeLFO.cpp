@@ -66,49 +66,6 @@ struct LowFrequencyOscillatorr {
     }
 };
 
-
-/*
-Display
-*/
-
-
-struct SmallIntegerDisplayWidgeterer : TransparentWidget {
-
-  float *value;
-
-  void draw(NVGcontext *vg) override
-  {
-    // Background
-    NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
-    nvgBeginPath(vg);
-    nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
-    nvgFillColor(vg, backgroundColor);
-    nvgFill(vg);
-
-    // text
-    std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
-    if (font) {
-    nvgFontSize(vg, 16);
-    nvgFontFaceId(vg, font->handle);
-    nvgTextLetterSpacing(vg, 0.5);
-    }
-
-    std::stringstream to_display;
-    to_display = format4display(*value);
-
-    Vec textPos = Vec(8.0f, 33.0f);
-    NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
-    nvgFillColor(vg, textColor);
-    nvgText(vg, textPos.x, textPos.y, to_display.str().substr(0, 4).c_str(), NULL);
-
-    nvgFontSize(vg, 8);
-    textPos = Vec(1.0f, (*value<0?28.0f:32.0f));
-    nvgText(vg, textPos.x, textPos.y, (*value<0?"-":"+"), NULL);
-
-  }
-};
-
-
 /*
 Widget
 */
@@ -151,8 +108,7 @@ struct RangeLFO : Module {
 
     LowFrequencyOscillatorr oscillator;
 
-    float display1_val;
-    float display2_val;
+    float display_val[2];
 
     RangeLFO() {
 		config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
@@ -173,8 +129,8 @@ struct RangeLFO : Module {
 void RangeLFO::step() {
 
     //display
-    display1_val = params[CH1_PARAM].value * clamp(inputs[FROM_CV_INPUT].normalize(10.0f) / 10.0f, -1.0f, 1.0f);
-    display2_val = params[CH2_PARAM].value * clamp(inputs[TO_CV_INPUT].normalize(10.0f) / 10.0f, -1.0f, 1.0f);
+    display_val[0] = params[CH1_PARAM].value * clamp(inputs[FROM_CV_INPUT].normalize(10.0f) / 10.0f, -1.0f, 1.0f);
+    display_val[1] = params[CH2_PARAM].value * clamp(inputs[TO_CV_INPUT].normalize(10.0f) / 10.0f, -1.0f, 1.0f);
 
     float osc_pitch = params[FREQ_PARAM].value + params[FM1_PARAM].value * inputs[FM1_INPUT].value + params[FM2_PARAM].value * inputs[FM2_INPUT].value;
     osc_pitch = osc_pitch * clamp(inputs[RATE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
@@ -191,10 +147,10 @@ void RangeLFO::step() {
     float sqr = oscillator.sqr();
 
     // new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
-    float sin_output = ( (sin - (-1)) / (1 - (-1)) ) * (display2_val - display1_val) + display1_val;
-    float tri_output = ( (tri - (-1)) / (1 - (-1)) ) * (display2_val - display1_val) + display1_val;
-    float saw_output = ( (saw - (-1)) / (1 - (-1)) ) * (display2_val - display1_val) + display1_val;
-    float sqr_output = ( (sqr - (-1)) / (1 - (-1)) ) * (display2_val - display1_val) + display1_val;
+    float sin_output = ( (sin - (-1)) / (1 - (-1)) ) * (display_val[1] - display_val[0]) + display_val[0];
+    float tri_output = ( (tri - (-1)) / (1 - (-1)) ) * (display_val[1] - display_val[0]) + display_val[0];
+    float saw_output = ( (saw - (-1)) / (1 - (-1)) ) * (display_val[1] - display_val[0]) + display_val[0];
+    float sqr_output = ( (sqr - (-1)) / (1 - (-1)) ) * (display_val[1] - display_val[0]) + display_val[0];
 
     outputs[SIN_OUTPUT].value = sin_output;
     outputs[TRI_OUTPUT].value = tri_output;
@@ -205,6 +161,46 @@ void RangeLFO::step() {
     lights[PHASE_NEG_LIGHT].setBrightnessSmooth(fmaxf(0.0, -oscillator.light()));
 }
 
+/*
+Display
+*/
+
+struct RangeLFODisplayWidget : TransparentWidget {
+    RangeLFO *module;
+    int display_num;
+
+    void draw(NVGcontext *vg) override {
+        // Background
+        NVGcolor backgroundColor = nvgRGB(0xC0, 0xC0, 0xC0);
+        nvgBeginPath(vg);
+        nvgRoundedRect(vg, 0.0, 0.0, box.size.x, box.size.y, 4.0);
+        nvgFillColor(vg, backgroundColor);
+        nvgFill(vg);
+
+        // text
+        std::shared_ptr<Font> font = APP->window->loadFont(asset::plugin(pluginInstance, "res/Segment7Standard.ttf"));
+        if (font) {
+            nvgFontSize(vg, 16);
+            nvgFontFaceId(vg, font->handle);
+            nvgTextLetterSpacing(vg, 0.5);
+        }
+
+        std::stringstream to_display;
+        float display_val = 12.0;
+        if (module)
+            display_val = module->display_val[display_num];
+        to_display = format4display(display_val);
+
+        Vec textPos = Vec(8.0f, 33.0f);
+        NVGcolor textColor = nvgRGB(0x00, 0x00, 0x00);
+        nvgFillColor(vg, textColor);
+        nvgText(vg, textPos.x, textPos.y, to_display.str().substr(0, 4).c_str(), NULL);
+
+        nvgFontSize(vg, 8);
+        textPos = Vec(1.0f, (display_val<0?28.0f:32.0f));
+        nvgText(vg, textPos.x, textPos.y, (display_val<0?"-":"+"), NULL);
+    }
+};
 
 struct RangeLFOWidget: ModuleWidget {
     RangeLFOWidget(RangeLFO *module);
@@ -226,25 +222,25 @@ RangeLFOWidget::RangeLFOWidget(RangeLFO *module) {
     addChild(createWidget<ScrewSilver>(Vec(15, 365)));
     addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 
-    if(module != NULL){
-        SmallIntegerDisplayWidgeterer *display = new SmallIntegerDisplayWidgeterer();
-        display->box.pos = Vec(23, 160);
-        display->box.size = Vec(50, 40);
-        display->value = &module->display1_val;
-        addChild(display);
+    RangeLFODisplayWidget *display = new RangeLFODisplayWidget();
+    display->box.pos = Vec(23, 160);
+    display->box.size = Vec(50, 40);
+    display->module = module;
+    display->display_num = 0;
+    addChild(display);
 
-        addParam(createParam<RoundBlackKnob>(Vec(28, 205), module, RangeLFO::CH1_PARAM));
-        addInput(createInput<PJ301MPort>(Vec(5, 235), module, RangeLFO::FROM_CV_INPUT));
+    addParam(createParam<RoundBlackKnob>(Vec(28, 205), module, RangeLFO::CH1_PARAM));
+    addInput(createInput<PJ301MPort>(Vec(5, 235), module, RangeLFO::FROM_CV_INPUT));
 
-        SmallIntegerDisplayWidgeterer *display2 = new SmallIntegerDisplayWidgeterer();
-        display2->box.pos = Vec(83, 160);
-        display2->box.size = Vec(50, 40);
-        display2->value = &module->display2_val;
-        addChild(display2);
+    RangeLFODisplayWidget *display2 = new RangeLFODisplayWidget();
+    display2->box.pos = Vec(83, 160);
+    display2->box.size = Vec(50, 40);
+    display2->module = module;
+    display2->display_num = 1;
+    addChild(display2);
 
-        addParam(createParam<RoundBlackKnob>(Vec(88, 205), module, RangeLFO::CH2_PARAM));
-        addInput(createInput<PJ301MPort>(Vec(62, 235), module, RangeLFO::TO_CV_INPUT));
-    }
+    addParam(createParam<RoundBlackKnob>(Vec(88, 205), module, RangeLFO::CH2_PARAM));
+    addInput(createInput<PJ301MPort>(Vec(62, 235), module, RangeLFO::TO_CV_INPUT));
 
     addParam(createParam<RoundHugeBlackKnob>(Vec(47, 61), module, RangeLFO::FREQ_PARAM));
     // addParam(createParam<RoundBlackKnob>(Vec(23, 143), module, RangeLFO::FM1_PARAM));

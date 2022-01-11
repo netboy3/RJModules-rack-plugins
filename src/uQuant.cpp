@@ -15,7 +15,7 @@ https://github.com/jhoar/AmalgamatedHarmonics
 #include <iomanip>
 
 // Displays
-struct TinyStringDisplayWidget : TransparentWidget {
+struct uQuantDisplayWidget : TransparentWidget {
 
   std::string *value;
 
@@ -218,8 +218,8 @@ uQuantWidget::uQuantWidget(uQuant *module) {
     addInput(createInput<PJ301MPort>(Vec(leftPad, 41), module, uQuant::IN_INPUT));
 
     if(module != NULL){
-        TinyStringDisplayWidget *displayKey = new TinyStringDisplayWidget();
-        displayKey = new TinyStringDisplayWidget();
+        uQuantDisplayWidget *displayKey = new uQuantDisplayWidget();
+        displayKey = new uQuantDisplayWidget();
         displayKey->box.pos = Vec(leftPad, 71);
         displayKey->box.size = Vec(25, 25);
         displayKey->value = &module->keyValue[0];
@@ -227,8 +227,8 @@ uQuantWidget::uQuantWidget(uQuant *module) {
         addParam(createParam<AHTrimpotSnap>(Vec(knobLeftPad, 101), module, uQuant::KEY_PARAM)); // 12 notes
         addInput(createInput<PJ301MPort>(Vec(leftPad, 125), module, uQuant::KEY_INPUT));
 
-        TinyStringDisplayWidget *displayScale = new TinyStringDisplayWidget();
-        displayScale = new TinyStringDisplayWidget();
+        uQuantDisplayWidget *displayScale = new uQuantDisplayWidget();
+        displayScale = new uQuantDisplayWidget();
         displayScale->box.pos = Vec(leftPad, 155);
         displayScale->box.size = Vec(25, 25);
         displayScale->value = &module->scaleValue[0];

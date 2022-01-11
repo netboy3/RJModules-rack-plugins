@@ -254,14 +254,15 @@ struct EuclidianSmallStringDisplayWidget : TransparentWidget {
     nvgTextLetterSpacing(vg, 0.4);
   }
 
-    if (!module)
-        return;
-
     std::stringstream to_display;
-    if(is_left){
-        to_display << std::setw(3) << std::to_string(module->k_display);
-    } else{
-        to_display << std::setw(3) << std::to_string(module->n_display);
+    if (module) {
+        if(is_left){
+            to_display << std::setw(3) << std::to_string(module->k_display);
+        } else{
+            to_display << std::setw(3) << std::to_string(module->n_display);
+        }
+    } else {
+        to_display << std::setw(3) << "3";
     }
 
     Vec textPos = Vec(6.0f, 24.0f);
@@ -315,25 +316,19 @@ struct EuclidianWidget : ModuleWidget {
     panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Euclidian.svg")));
     addChild(panel);
 
-    if (!module)
-        return;
-
     // Displays
-    if(module != NULL){
         EuclidianSmallStringDisplayWidget *k_Display = new EuclidianSmallStringDisplayWidget();
         k_Display->box.pos = Vec(45, 48);
         k_Display->box.size = Vec(35, 35);
         k_Display->module = module;
         addChild(k_Display);
-    }
-    if(module != NULL){
+
         EuclidianSmallStringDisplayWidget *n_Display = new EuclidianSmallStringDisplayWidget();
         n_Display->box.pos = Vec(100, 48);
         n_Display->box.size = Vec(35, 35);
         n_Display->module = module;
         n_Display->is_left = false;
         addChild(n_Display);
-    }
 
     // Knobs
     int LEFT = 14;
