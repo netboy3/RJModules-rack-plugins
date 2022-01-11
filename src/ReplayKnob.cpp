@@ -145,7 +145,7 @@ void ReplayKnob::step() {
         float startParam = params[START_PARAM].value;
         float endParam = params[END_PARAM].value;
         float vectorSize = replayVector.size();
-        int startPos = (int) (startParam * vectorSize);
+        int startPos = (int) (startParam * (vectorSize-1));
         int endPos = (int) (endParam * vectorSize);
         if(startPos >= endPos){
             startPos = endPos;
@@ -212,7 +212,7 @@ void ReplayKnob::step() {
         float startParam_2 = params[START_PARAM_2].value;
         float endParam_2 = params[END_PARAM_2].value;
         float vectorSize_2 = replayVector_2.size();
-        int startPos_2 = (int) (startParam_2 * vectorSize_2);
+        int startPos_2 = (int) (startParam_2 * (vectorSize_2-1));
         int endPos_2 = (int) (endParam_2 * vectorSize_2);
         if(startPos_2 >= endPos_2){
             startPos_2 = endPos_2;
