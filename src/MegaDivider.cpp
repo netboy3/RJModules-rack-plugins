@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include "plugin.hpp"
 #include <iostream>
 #include <cmath>
@@ -226,10 +225,10 @@ struct MegaDivider: Module {
 
     void process(const ProcessArgs& args) override {
 
-        int A = (int)params[A_PARAM].getValue() * clamp(inputs[A_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        int B = (int)params[B_PARAM].getValue() * clamp(inputs[B_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        int C = (int)params[C_PARAM].getValue() * clamp(inputs[C_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        int D = (int)params[D_PARAM].getValue() * clamp(inputs[D_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
+        int A = (int)params[A_PARAM].getValue() * clamp(inputs[A_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        int B = (int)params[B_PARAM].getValue() * clamp(inputs[B_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        int C = (int)params[C_PARAM].getValue() * clamp(inputs[C_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        int D = (int)params[D_PARAM].getValue() * clamp(inputs[D_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
 
         a_display = A;
         b_display = B;
@@ -340,7 +339,7 @@ struct MegaDividerRoundSmallBlackKnob : RoundSmallBlackKnob
 {
     MegaDividerRoundSmallBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -355,7 +354,7 @@ struct MegaDividerWidget: ModuleWidget {
         box.size = Vec(330, 380);
 
         {
-            SVGPanel *panel = new SVGPanel();
+            SvgPanel *panel = new SvgPanel();
             panel->box.size = box.size;
             panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MegaDivider.svg")));
             addChild(panel);

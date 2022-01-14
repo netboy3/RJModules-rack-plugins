@@ -18,7 +18,7 @@ struct SlapbackRoundSmallBlackKnob : RoundSmallBlackKnob
 {
     SlapbackRoundSmallBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
     }
 };
 
@@ -110,7 +110,7 @@ struct Slapback : Module {
 
     /* Left Channel */
     // Get input to delay block
-    float adjusted = TIME_PARAM_value * clamp(inputs[TIME_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float adjusted = TIME_PARAM_value * clamp(inputs[TIME_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     float selected_value = rescale(adjusted, 0.0f, 10000.0f, 0.0f, 10.0f);
     float signal_input = inputs[IN_INPUT].getVoltage();
     float dry = signal_input;
@@ -162,7 +162,7 @@ struct Slapback : Module {
 
     /* Right Channel */
     // Get input to delay block
-    float adjusted_2 = TIME_PARAM_2_value * clamp(inputs[TIME_INPUT_2].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float adjusted_2 = TIME_PARAM_2_value * clamp(inputs[TIME_INPUT_2].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     float selected_value_2 = rescale(adjusted_2, 0.0f, 10000.0f, 0.0f, 10.0f);
     float signal_input_2 = inputs[IN_INPUT_2].getVoltage();
     float dry_2 = signal_input_2;

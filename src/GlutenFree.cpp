@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include "osdialog.h"
 #include "common.hpp"
 #include "plugin.hpp"
@@ -18,7 +17,7 @@ struct GlutenFreeRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     GlutenFreeRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
     }
 };
 
@@ -26,7 +25,7 @@ struct GlutenFreeRoundBlackSnapKnob : RoundBlackKnob
 {
     GlutenFreeRoundBlackSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -133,7 +132,6 @@ struct GlutenFree : Module {
         }
 
         float processed = 0.0;
-        int  instrument_choice = params[GlutenFree_PARAM].value;
 
         // parameters
         float voices = params[VOICE_PARAM].value;
@@ -143,12 +141,12 @@ struct GlutenFree : Module {
             lastVoices = voices;
         }
 
-        float param_1 = params[PARAM_1].value * clamp(inputs[PARAM_1_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        float param_2 = params[PARAM_2].value * clamp(inputs[PARAM_2_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        float param_3 = params[PARAM_3].value * clamp(inputs[PARAM_3_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        float param_4 = params[PARAM_4].value * clamp(inputs[PARAM_4_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        float param_5 = params[PARAM_5].value * clamp(inputs[PARAM_5_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
-        float param_6 = params[PARAM_6].value * clamp(inputs[PARAM_6_CV].normalize(5.0f) / 5.0f, 0.0f, 1.0f);
+        float param_1 = params[PARAM_1].value * clamp(inputs[PARAM_1_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        float param_2 = params[PARAM_2].value * clamp(inputs[PARAM_2_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        float param_3 = params[PARAM_3].value * clamp(inputs[PARAM_3_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        float param_4 = params[PARAM_4].value * clamp(inputs[PARAM_4_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        float param_5 = params[PARAM_5].value * clamp(inputs[PARAM_5_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
+        float param_6 = params[PARAM_6].value * clamp(inputs[PARAM_6_CV].getNormalVoltage(5.0f) / 5.0f, 0.0f, 1.0f);
 
         // Settings
         granulate.setRandomFactor( param_1 );
@@ -247,7 +245,7 @@ struct GlutenFreeWidget : ModuleWidget {
     setModule(module);
     box.size = Vec(15*10, 380);
 
-    SVGPanel *panel = new SVGPanel();
+    SvgPanel *panel = new SvgPanel();
     panel->box.size = box.size;
     panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/GlutenFree.svg")));
     addChild(panel);

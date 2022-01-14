@@ -201,17 +201,12 @@ uQuantWidget::uQuantWidget(uQuant *module) {
     box.size = Vec(30, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/uQuant.svg")));
         addChild(panel);
     }
 
-    float xOffset = 18.0;
-    float xSpace = 21.0;
-    float xPos = 0.0;
-    float yPos = 0.0;
-    int scale = 0;
     int leftPad = 3;
     int knobLeftPad = 6;
 

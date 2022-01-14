@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include "UI.hpp"
 #include <iostream>
 #include <cmath>
@@ -8,7 +7,7 @@ struct GuitarSnapKnob : RoundSmallBlackKnob
 {
     GuitarSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -19,7 +18,7 @@ struct GuitarSnapKnobLg : RoundLargeBlackKnob
 {
     GuitarSnapKnobLg()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -97,12 +96,12 @@ struct GuitarNeck: Module {
         config(NUM_PARAMS, NUM_INPUTS, NUM_OUTPUTS, NUM_LIGHTS);
 
         for (int i = 0; i < 64; i++) {
-            configParam(GuitarNeck::FRET, 0.0, 1.0, 0.0, "");
-            configParam(GuitarNeck::LIGHT, 0.0, 1.0, 0.0, "");
+            configParam(FRET, 0.0, 1.0, 0.0, "");
+            configParam(LIGHT, 0.0, 1.0, 0.0, "");
         }
 
-        configParam(GuitarNeck::OCT_PARAM, -2.0, 4.0, 1.0, string::f("Octave", 0));
-        configParam(GuitarNeck::ROOT_PARAM, 0.0, 11.0, 4.0, string::f("Root", 0));
+        configParam(OCT_PARAM, -2.0, 4.0, 1.0, "Octave");
+        configParam(ROOT_PARAM, 0.0, 11.0, 4.0, "Root");
 
     }
     void step() override;
@@ -125,8 +124,8 @@ struct MedLight : BASE {
 void GuitarNeck::step() {
 
     // Knobs and CV processing
-    int root = params[ROOT_PARAM].value + clamp(inputs[ROOT_INPUT].normalize(5.0f) / 5.0f, 0.0f, 11.0f);
-    int octave = params[OCT_PARAM].value * clamp(inputs[OCT_INPUT].normalize(5.0f) / 5.0f, 0.0f, 5.0f);
+    int root = params[ROOT_PARAM].value + clamp(inputs[ROOT_INPUT].getNormalVoltage(5.0f) / 5.0f, 0.0f, 11.0f);
+    int octave = params[OCT_PARAM].value * clamp(inputs[OCT_INPUT].getNormalVoltage(5.0f) / 5.0f, 0.0f, 5.0f);
 
 
     // Buttons
@@ -248,7 +247,7 @@ GuitarNeckWidget::GuitarNeckWidget(GuitarNeck *module) {
     box.size = Vec(420, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/GuitarNeck.svg")));
         addChild(panel);

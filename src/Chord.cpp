@@ -87,19 +87,15 @@ struct Chord : Module {
 void Chord::step() {
 
     if(step_count == 8){
-        float offset_raw = (params[CHORD_PARAM].value) * 12 - 6 + (inputs[CHORD_CV_INPUT].value) / 1.5;
-        float pitch_offset = round(offset_raw) / 12;
-        float root = 1.0*1 + pitch_offset;
-
-        float _input_pitch = params[CHORD_PARAM].value * clamp(inputs[CHORD_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;
+        float _input_pitch = params[CHORD_PARAM].value * clamp(inputs[CHORD_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;
         float _pitch = (int) _input_pitch % (int) 12;
         float _octave = int(_input_pitch / 12);
 
-        float _shape = params[SHAPE_PARAM].value * clamp(inputs[SHAPE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;
-        float _three_interval;
-        float _five_interval;
-        float _seven_interval;
-        char* shape = NULL;
+        float _shape = params[SHAPE_PARAM].value * clamp(inputs[SHAPE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;
+        float _three_interval = 0.0f;
+        float _five_interval = 0.0f;
+        float _seven_interval = 0.0f;
+        std::string shape = "";
         // via https://en.wikibooks.org/wiki/Music_Theory/Chords
         switch ((int) _shape) {
             case 0: {
@@ -152,8 +148,8 @@ void Chord::step() {
         outputs[FIVE_OUTPUT].value = _fifth_cv;
         outputs[SEVEN_OUTPUT].value = _seventh_cv;
 
-        char* pitch = NULL;
-        char* sharpFlat = NULL;
+        std::string pitch = "";
+        std::string sharpFlat = "";
         switch ((int) _pitch) {
             case 0: {
                 pitch = "C";
@@ -210,7 +206,7 @@ void Chord::step() {
             }
         }
 
-        chord_name = std::string(pitch) + std::to_string((int)_octave) + std::string(shape);
+        chord_name = pitch + std::to_string((int)_octave) + shape;
         step_count = 0;
     } else{
         step_count++;
@@ -262,7 +258,7 @@ ChordWidget::ChordWidget(Chord *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Chord.svg")));
         addChild(panel);

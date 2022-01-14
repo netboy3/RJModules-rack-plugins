@@ -73,7 +73,7 @@ void Stutter::step(){
 
   float in = inputs[CH1_INPUT].value;
   float on_off = params[ONOFF_PARAM].value;
-  int time = params[TIME_PARAM].value * clamp(inputs[TIME_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f); ;
+  int time = params[TIME_PARAM].value * clamp(inputs[TIME_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f); ;
   float wet = in;
 
   // issa hack
@@ -114,7 +114,7 @@ void Stutter::step(){
   last_press++;
 
   //mix
-  float mix_percent = params[MIX_PARAM].value * clamp(inputs[MIX_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+  float mix_percent = params[MIX_PARAM].value * clamp(inputs[MIX_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
   float mixed = ((wet * mix_percent)) + (in * (1-mix_percent));
 
   outputs[CH1_OUTPUT].value = mixed;
@@ -135,7 +135,7 @@ StutterWidget::StutterWidget(Stutter *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Stutter.svg")));
         addChild(panel);

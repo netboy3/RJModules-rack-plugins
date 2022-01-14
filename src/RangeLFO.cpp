@@ -122,18 +122,18 @@ struct RangeLFO : Module {
         configParam(RangeLFO::INVERT_PARAM, 0.0, 1.0, 0.0, "");
         configParam(RangeLFO::OFFSET_PARAM, 0.0, 1.0, 0.0, "");
     }
-    void step() override;
+    void process(const ProcessArgs& args) override;
 };
 
 
-void RangeLFO::step() {
+void RangeLFO::process(const ProcessArgs& args) {
 
     //display
-    display_val[0] = params[CH1_PARAM].value * clamp(inputs[FROM_CV_INPUT].normalize(10.0f) / 10.0f, -1.0f, 1.0f);
-    display_val[1] = params[CH2_PARAM].value * clamp(inputs[TO_CV_INPUT].normalize(10.0f) / 10.0f, -1.0f, 1.0f);
+    display_val[0] = params[CH1_PARAM].value * clamp(inputs[FROM_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, -1.0f, 1.0f);
+    display_val[1] = params[CH2_PARAM].value * clamp(inputs[TO_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, -1.0f, 1.0f);
 
     float osc_pitch = params[FREQ_PARAM].value + params[FM1_PARAM].value * inputs[FM1_INPUT].value + params[FM2_PARAM].value * inputs[FM2_INPUT].value;
-    osc_pitch = osc_pitch * clamp(inputs[RATE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    osc_pitch = osc_pitch * clamp(inputs[RATE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     oscillator.setPitch(osc_pitch);
     oscillator.setPulseWidth(params[PW_PARAM].value + params[PWM_PARAM].value * inputs[PW_INPUT].value / 10.0);
     oscillator.offset = (params[OFFSET_PARAM].value > 0.0);
@@ -157,8 +157,8 @@ void RangeLFO::step() {
     outputs[SAW_OUTPUT].value = saw_output;
     outputs[SQR_OUTPUT].value = sqr_output;
 
-    lights[PHASE_POS_LIGHT].setBrightnessSmooth(fmaxf(0.0, oscillator.light()));
-    lights[PHASE_NEG_LIGHT].setBrightnessSmooth(fmaxf(0.0, -oscillator.light()));
+    lights[PHASE_POS_LIGHT].setBrightnessSmooth(fmaxf(0.0, oscillator.light()), args.sampleTime);
+    lights[PHASE_NEG_LIGHT].setBrightnessSmooth(fmaxf(0.0, -oscillator.light()), args.sampleTime);
 }
 
 /*
@@ -211,7 +211,7 @@ RangeLFOWidget::RangeLFOWidget(RangeLFO *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/RangeLFO.svg")));
         addChild(panel);

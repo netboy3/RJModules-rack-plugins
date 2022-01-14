@@ -134,7 +134,6 @@ struct MutateSeq : Module {
             init = true;
         }
 
-        bool gateIn = false;
         if (inputs[IN_INPUT].active) {
             if (clockTrigger.process(inputs[IN_INPUT].value)) {
                 setIndex(index + 1);
@@ -149,10 +148,10 @@ struct MutateSeq : Module {
                         bool mutate_oct = rand() & 1;
                         if(mutate_oct){
                             if(rand() & 1){
-                                int plus_distance = (int) rand() & (int) params[OCT_DEPTH].value + 1;
+                                int plus_distance = (int) rand() & ((int) params[OCT_DEPTH].value + 1);
                                 seq_octaves[choice] = seq_octaves[choice] + plus_distance;
                             }else{
-                                int minus_distance = (int) rand() & (int) params[OCT_DEPTH].value + 1;
+                                int minus_distance = (int) rand() & ((int) params[OCT_DEPTH].value + 1);
                                 seq_octaves[choice] = seq_octaves[choice] - minus_distance;
                             }
 
@@ -165,10 +164,10 @@ struct MutateSeq : Module {
                         bool mutate_semi = rand() & 1;
                         if(mutate_semi){
                             if(rand() & 1){
-                                int plus_distance = (int) rand() & (int) params[NOTE_DEPTH].value + 1;
+                                int plus_distance = (int) rand() & ((int) params[NOTE_DEPTH].value + 1);
                                 seq_notes[choice] = seq_notes[choice] + plus_distance;
                             }else{
-                                int minus_distance = (int) rand() & (int) params[NOTE_DEPTH].value + 1;
+                                int minus_distance = (int) rand() & ((int) params[NOTE_DEPTH].value + 1);
                                 seq_notes[choice] = seq_notes[choice] - minus_distance;
                             }
 

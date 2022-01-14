@@ -258,7 +258,7 @@ ReplayKnobWidget::ReplayKnobWidget(ReplayKnob *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ReplayKnob.svg")));
         addChild(panel);

@@ -94,37 +94,37 @@ struct TwinLFO : Module {
         configParam(TwinLFO::FREQ_PARAM_2, 0.0, 8.0, 0.5, "");
         configParam(TwinLFO::SHAPE_PARAM, 0.0, 1.0, 1.0, "");
     }
-    void step() override;
+    void process(const ProcessArgs& args) override;
 };
 
-void TwinLFO::step() {
+void TwinLFO::process(const ProcessArgs& args) {
 
-    float root_pitch2 = params[FREQ_PARAM_2].value * clamp(inputs[FREQ_CV_INPUT_2].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float root_pitch2 = params[FREQ_PARAM_2].value * clamp(inputs[FREQ_CV_INPUT_2].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     oscillator2.setPitch(root_pitch2);
     oscillator2.offset = (params[OFFSET_PARAM].value > 0.0);
     oscillator2.invert = (params[INVERT_PARAM].value <= 0.0);
     oscillator2.step(0.3 / APP->engine->getSampleRate());
     oscillator2.setReset(inputs[RESET_INPUT].value);
 
-    float root_pitch = params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f) * clamp(oscillator2.sin(), 0.0f, 1.0f);
+    float root_pitch = params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f) * clamp(oscillator2.sin(), 0.0f, 1.0f);
     oscillator.setPitch(root_pitch);
     oscillator.offset = (params[OFFSET_PARAM].value > 0.0);
     oscillator.invert = (params[INVERT_PARAM].value <= 0.0);
     oscillator.step(0.3 / APP->engine->getSampleRate());
     oscillator.setReset(inputs[RESET_INPUT].value);
 
-    float shape_percent = params[SHAPE_PARAM].value * clamp(inputs[SHAPE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float shape_percent = params[SHAPE_PARAM].value * clamp(inputs[SHAPE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     float mixed = ((oscillator.sin() * shape_percent)) + (oscillator.saw() * (1-shape_percent));
 
 
     // This is from 0 to 2V. Should be mapped?
     outputs[SAW_OUTPUT].value = mixed;
 
-    lights[PHASE_POS_LIGHT].setBrightnessSmooth(fmaxf(0.0, oscillator.light()));
-    lights[PHASE_NEG_LIGHT].setBrightnessSmooth(fmaxf(0.0, -oscillator.light()));
+    lights[PHASE_POS_LIGHT].setBrightnessSmooth(fmaxf(0.0, oscillator.light()), args.sampleTime);
+    lights[PHASE_NEG_LIGHT].setBrightnessSmooth(fmaxf(0.0, -oscillator.light()), args.sampleTime);
 
-    lights[PHASE_POS_LIGHT2].setBrightnessSmooth(fmaxf(0.0, oscillator2.light()));
-    lights[PHASE_NEG_LIGHT2].setBrightnessSmooth(fmaxf(0.0, -oscillator2.light()));
+    lights[PHASE_POS_LIGHT2].setBrightnessSmooth(fmaxf(0.0, oscillator2.light()), args.sampleTime);
+    lights[PHASE_NEG_LIGHT2].setBrightnessSmooth(fmaxf(0.0, -oscillator2.light()), args.sampleTime);
 }
 
 struct TwinLFOWidget: ModuleWidget {
@@ -136,7 +136,7 @@ TwinLFOWidget::TwinLFOWidget(TwinLFO *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/TwinLFO.svg")));
         addChild(panel);

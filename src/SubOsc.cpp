@@ -45,7 +45,7 @@ struct SORoundLargeBlackKnob : RoundHugeBlackKnob
 {
     SORoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
     }
 };
 

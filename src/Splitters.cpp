@@ -64,7 +64,7 @@ SplittersWidget::SplittersWidget(Splitters *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Splitters.svg")));
         addChild(panel);

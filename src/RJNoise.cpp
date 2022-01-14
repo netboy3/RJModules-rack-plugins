@@ -113,15 +113,15 @@ void Noise::step(){
     std::uniform_real_distribution<> distr1(-5, 5); // define the range
     white =  distr1(eng);
 
-    mix_value = params[COLOR_PARAM].value * clamp(inputs[COLOR_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    mix_value = params[COLOR_PARAM].value * clamp(inputs[COLOR_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     mixed = ( (mapped_pink * mix_value) + (white * (1.0 - mix_value)) )/ 2;
 
     // filtration
     mixed += 1.0e-6 * (2.0*random::uniform() - 1.0)*1000;
 
     //float cutoffcv =  400;//*params[LPF_PARAM].value * inputs[FREQ_INPUT].value+ 400*inputs[FREQ_INPUT2].value *params[FREQ_CV_PARAM2].value ;
-    float lp_cutoff = params[LPF_PARAM].value * clamp(inputs[LPF_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;
-    float hp_cutoff = params[HPF_PARAM].value * clamp(inputs[HPF_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;  // + cutoffcv;
+    float lp_cutoff = params[LPF_PARAM].value * clamp(inputs[LPF_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;
+    float hp_cutoff = params[HPF_PARAM].value * clamp(inputs[HPF_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;  // + cutoffcv;
 
     lpFilter->setFilterType(0);
     hpFilter->setFilterType(2);
@@ -153,7 +153,7 @@ NoiseWidget::NoiseWidget(Noise *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Noise.svg")));
         addChild(panel);

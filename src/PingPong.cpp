@@ -14,7 +14,7 @@ struct PingPongRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     PingPongRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
     }
 };
 
@@ -22,7 +22,7 @@ struct PingPongRoundBlackSnapKnob : RoundBlackKnob
 {
     PingPongRoundBlackSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -460,7 +460,6 @@ struct PingPong : Module {
     /* Right Channel! */
     // Get input to delay block
     float signal_input_right = left_output;
-    float feedback_right = clamp(FEEDBACK_PARAM_value + inputs[FEEDBACK_INPUT].getVoltage() / 10.0f, 0.0f, 1.0f);
     float dry_right = signal_input_right;// + (lastWet * feedback_right);
 
     // Number of delay samples
@@ -601,7 +600,7 @@ struct PingPongWidget : ModuleWidget {
     setModule(module);
     box.size = Vec(15*10, 380);
 
-    SVGPanel *panel = new SVGPanel();
+    SvgPanel *panel = new SvgPanel();
     panel->box.size = box.size;
     panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PingPong.svg")));
     addChild(panel);

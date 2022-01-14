@@ -1,4 +1,3 @@
-// #include "dsp/digital.hpp"
 // #include <iostream>
 // #include "RJModules.hpp"
 
@@ -232,20 +231,20 @@
 //     outputs[OUTPUT_1].value = osc_out1 - cv;
 //     //outputs[OUTPUT_1].value = osc1.saw() * env_out1;
 
-//     // float root_pitch = params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+//     // float root_pitch = params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
 //     // oscillator.setPitch(root_pitch);
 //     // oscillator.offset = (params[OFFSET_PARAM].value > 0.0);
 //     // oscillator.invert = (params[INVERT_PARAM].value <= 0.0);
 //     // oscillator.step(1.0 / APP->engine->getSampleRate());
 //     // oscillator.setReset(inputs[RESET_INPUT].value);
 
-//     // oscillator2.setPitch(root_pitch + (params[DETUNE_PARAM].value * DETUNE_STEP * clamp(inputs[DETUNE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f)));
+//     // oscillator2.setPitch(root_pitch + (params[DETUNE_PARAM].value * DETUNE_STEP * clamp(inputs[DETUNE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f)));
 //     // oscillator2.offset = (params[OFFSET_PARAM].value > 0.0);
 //     // oscillator2.invert = (params[INVERT_PARAM].value <= 0.0);
 //     // oscillator2.step(1.0 / APP->engine->getSampleRate());
 //     // oscillator2.setReset(inputs[RESET_INPUT].value);
 
-//     // oscillator3.setPitch(root_pitch - (params[DETUNE_PARAM].value * DETUNE_STEP * clamp(inputs[DETUNE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f)));
+//     // oscillator3.setPitch(root_pitch - (params[DETUNE_PARAM].value * DETUNE_STEP * clamp(inputs[DETUNE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f)));
 //     // oscillator3.offset = (params[OFFSET_PARAM].value > 0.0);
 //     // oscillator3.invert = (params[INVERT_PARAM].value <= 0.0);
 //     // oscillator3.step(1.0 / APP->engine->getSampleRate());
@@ -258,7 +257,7 @@
 //     //     osc3_saw = oscillator3.saw();
 //     // }
 
-//     // float mix_percent = params[MIX_PARAM].value * clamp(inputs[MIX_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+//     // float mix_percent = params[MIX_PARAM].value * clamp(inputs[MIX_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
 //     // outputs[SAW_OUTPUT].value = 5.0 * (( oscillator.saw() + (oscillator2.saw() * mix_percent) + (osc3_saw * mix_percent) / 3));
 
 //     // lights[PHASE_POS_LIGHT].setBrightnessSmooth(fmaxf(0.0, oscillator.light()));
@@ -274,7 +273,7 @@
 //      box.size = Vec(240, 380);
 
 //     {
-//         SVGPanel *panel = new SVGPanel();
+//         SvgPanel *panel = new SvgPanel();
 //         panel->box.size = box.size;
 //         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/ThreeXOSC.svg")));
 //         addChild(panel);

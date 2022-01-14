@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include <iostream>
 #include <cmath>
 
@@ -175,7 +174,7 @@ ButtonsWidget::ButtonsWidget(Buttons *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Buttons.svg")));
         addChild(panel);

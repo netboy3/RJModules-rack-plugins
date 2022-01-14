@@ -105,8 +105,6 @@ struct Pluck : Module {
             decaying = false;
         }
 
-        bool sustaining = isNear(env, sustain, 1e-3);
-        bool resting = isNear(env, 0.0f, 1e-3);
         float env_output = 10.0f * env;
 
         /* VCA */

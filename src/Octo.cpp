@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include "plugin.hpp"
 #include <iostream>
 #include <cmath>
@@ -13,7 +12,7 @@ struct OctoRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     OctoRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
     }
 };
 
@@ -21,7 +20,7 @@ struct OctoRoundSmallBlackKnob : RoundSmallBlackKnob
 {
     OctoRoundSmallBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
     }
 };
 
@@ -238,7 +237,7 @@ struct OctoWidget: ModuleWidget {
         box.size = Vec(6*10, 380);
 
         {
-            SVGPanel *panel = new SVGPanel();
+            SvgPanel *panel = new SvgPanel();
             panel->box.size = box.size;
             panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Octo.svg")));
             addChild(panel);

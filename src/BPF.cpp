@@ -43,9 +43,9 @@ void BPF::step() {
 
     BPFilter->setFilterType(1);
 
-    BPFilter->setCutoffFreq(params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
-    // BPFilter->setQ(params[WIDTH_PARAM].value * clamp(inputs[VOL_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
-    BPFilter->setResonance(params[VOL_PARAM].value * clamp(inputs[WIDTH_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
+    BPFilter->setCutoffFreq(params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
+    // BPFilter->setQ(params[WIDTH_PARAM].value * clamp(inputs[VOL_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
+    BPFilter->setResonance(params[VOL_PARAM].value * clamp(inputs[WIDTH_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
     BPFilter->setSampleRate(APP->engine->getSampleRate());
 
     wet = BPFilter->processAudioSample(dry, 1);
@@ -62,7 +62,7 @@ BPFWidget::BPFWidget(BPF *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BPF.svg")));
         addChild(panel);

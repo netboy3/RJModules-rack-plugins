@@ -2,7 +2,6 @@
 #include <iostream>
 #include <cmath>
 #include <random>
-#include "dsp/digital.hpp"
 #include "VAStateVariableFilter.h"
 
 struct RandomFilter: Module {
@@ -57,7 +56,6 @@ struct GiantLight : BASE {
 void RandomFilter::step() {
 
     const float lightLambda = 0.075;
-    float output = 0.0;
 
     // Reset
     if ((params[RESET_PARAM].value > 0 && last_press > 7000) || inputs[BUTTON_CV_INPUT].value > 0)   {
@@ -83,7 +81,7 @@ void RandomFilter::step() {
 
     float dry = inputs[CH1_INPUT].value;
     float wet = rFilter->processAudioSample(dry, 1);
-    float mix_cv = clamp(inputs[MIX_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float mix_cv = clamp(inputs[MIX_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     float mixed = (wet * (params[MIX_PARAM].value * mix_cv)) + (dry * ((1-params[MIX_PARAM].value) * mix_cv));
 
     outputs[CH1_OUTPUT].value = mixed;
@@ -101,7 +99,7 @@ RandomFilterWidget::RandomFilterWidget(RandomFilter *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/RandomFilter.svg")));
         addChild(panel);

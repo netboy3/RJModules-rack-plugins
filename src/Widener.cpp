@@ -108,7 +108,7 @@ void Widener::step(){
   lpFilter->setSampleRate(APP->engine->getSampleRate());
   hpFilter->setSampleRate(APP->engine->getSampleRate());
 
-  float param = params[FILTER_PARAM].value * clamp(inputs[FILTER_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+  float param = params[FILTER_PARAM].value * clamp(inputs[FILTER_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
 
   if(param < .5){
       // new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
@@ -127,7 +127,7 @@ void Widener::step(){
   // }
 
   //mix
-  float mix_percent = params[MIX_PARAM].value * clamp(inputs[MIX_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+  float mix_percent = params[MIX_PARAM].value * clamp(inputs[MIX_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
   float mixed = ((wet * mix_percent)) + (in * (1-mix_percent));
 
   outputs[CH1_OUTPUT].value = in;
@@ -144,7 +144,7 @@ WidenerWidget::WidenerWidget(Widener *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Widener.svg")));
         addChild(panel);

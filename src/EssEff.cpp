@@ -188,7 +188,7 @@ void EssEff::step() {
             // new note on
             int bend;
             if(inputs[BEND_INPUT].active){
-                bend = params[BEND_PARAM].value * clamp(inputs[BEND_INPUT].normalize(10.0f) / 10.0f, 0.0f, 16383.0f);
+                bend = params[BEND_PARAM].value * clamp(inputs[BEND_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 16383.0f);
             } else{
                 bend = params[BEND_PARAM].value;
             }
@@ -296,7 +296,7 @@ EssEffWidget::EssEffWidget(EssEff *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/EssEff.svg")));
         addChild(panel);

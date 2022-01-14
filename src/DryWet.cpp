@@ -113,7 +113,7 @@ void DryWet::step() {
     *
     */
 
-    float mix_amount = params[BIG_PARAM].value * clamp(inputs[BIG_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float mix_amount = params[BIG_PARAM].value * clamp(inputs[BIG_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     outputs[OUT_OUTPUT].value = (inputs[IN2_INPUT].value * mix_amount) + (((1 - mix_amount)) * inputs[IN_INPUT].value);
     lights[IN2_LIGHT].value = mix_amount;
     lights[IN_LIGHT].value = 1 - mix_amount;
@@ -124,7 +124,7 @@ void DryWet::step() {
     *
     */
 
-    float mix_amount2 = params[BIG_PARAM_2].value * clamp(inputs[BIG_CV_INPUT_2].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float mix_amount2 = params[BIG_PARAM_2].value * clamp(inputs[BIG_CV_INPUT_2].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     outputs[OUT_OUTPUT_2].value = (inputs[IN2_INPUT_2].value * mix_amount2) + (((1 - mix_amount2)) * inputs[IN_INPUT_2].value);
     lights[IN2_LIGHT_2].value = mix_amount2;
     lights[IN_LIGHT_2].value = 1 - mix_amount2;
@@ -138,14 +138,12 @@ struct DryWetWidget: ModuleWidget {
 DryWetWidget::DryWetWidget(DryWet *module) {
         setModule(module);
 
-    float buttonx = 20;
-    float buttony = 114;
     float offset = 160;
 
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DryWet.svg")));
         addChild(panel);

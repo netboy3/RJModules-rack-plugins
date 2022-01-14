@@ -20,7 +20,7 @@ struct RJChorusRoundSmallBlackKnob : RoundSmallBlackKnob
 {
     RJChorusRoundSmallBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
     }
 };
 
@@ -62,15 +62,15 @@ struct RJChorus : Module {
     void process(const ProcessArgs &args) override {
 
         float input = inputs[IN_INPUT].value;
-        int delay = params[DELAY_PARAM].value * clamp(inputs[DELAY_CV].normalize(1.0f) / 1.0f, 0.0f, 1.0f);
+        int delay = params[DELAY_PARAM].value * clamp(inputs[DELAY_CV].getNormalVoltage(1.0f) / 1.0f, 0.0f, 1.0f);
 
         if(delay != lastDelay){
             chorus = stk::Chorus(delay);
             lastDelay = delay;
         }
 
-        chorus.setModFrequency( params[FREQ_PARAM].value * clamp(inputs[FREQ_CV].normalize(1.0f) / 1.0f, 0.0f, 1.0f) );
-        chorus.setModDepth( params[DEPTH_PARAM].value * clamp(inputs[DEPTH_CV].normalize(1.0f) / 1.0f, 0.0f, 1.0f) );
+        chorus.setModFrequency( params[FREQ_PARAM].value * clamp(inputs[FREQ_CV].getNormalVoltage(1.0f) / 1.0f, 0.0f, 1.0f) );
+        chorus.setModDepth( params[DEPTH_PARAM].value * clamp(inputs[DEPTH_CV].getNormalVoltage(1.0f) / 1.0f, 0.0f, 1.0f) );
         float processed = chorus.tick( input );
         outputs[OUT_OUTPUT].value = processed;
 

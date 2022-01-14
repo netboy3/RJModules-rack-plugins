@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include "plugin.hpp"
 #include <iostream>
 #include <cmath>
@@ -14,7 +13,7 @@ struct GaussianRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     GaussianRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
     }
 };
 
@@ -22,7 +21,7 @@ struct GaussianRoundSmallBlackKnob : RoundSmallBlackKnob
 {
     GaussianRoundSmallBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
     }
 };
 
@@ -118,7 +117,7 @@ struct Gaussian: Module {
         if (btnTrigger.process(params[BUTTON_PARAM].value) || inTrigger.process(inputs[TRIGGER_INPUT].value)) {
 
             bool good = false;
-            int result;
+            int result = 0;
 
             while(!good){
                 result = std::round(d(gen)) - 1;
@@ -156,7 +155,7 @@ struct GaussianWidget: ModuleWidget {
         box.size = Vec(6*10, 380);
 
         {
-            SVGPanel *panel = new SVGPanel();
+            SvgPanel *panel = new SvgPanel();
             panel->box.size = box.size;
             panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Gaussian.svg")));
             addChild(panel);

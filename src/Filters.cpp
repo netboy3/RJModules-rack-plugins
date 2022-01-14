@@ -2,7 +2,6 @@
 #include <stdlib.h>
 
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include "VAStateVariableFilter.h"
 
 #define NUM_CHANNELS 10

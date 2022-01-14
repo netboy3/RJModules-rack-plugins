@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include <iostream>
 #include <cmath>
 
@@ -44,7 +43,7 @@ struct MetaKnob: Module {
 
 struct RoundGiantBlackKnob : RoundKnob {
     RoundGiantBlackKnob() {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/RoundGiantBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/RoundGiantBlackKnob.svg")));
     }
 };
 
@@ -57,7 +56,7 @@ struct GiantLight : BASE {
 
 void MetaKnob::step() {
 
-    float param = params[BIG_PARAM].value * clamp(inputs[BIG_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 10.0f);
+    float param = params[BIG_PARAM].value * clamp(inputs[BIG_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 10.0f);
 
     // BI
     outputs[CH1_OUTPUT].value = param;
@@ -85,7 +84,7 @@ MetaKnobWidget::MetaKnobWidget(MetaKnob *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/MetaKnob.svg")));
         addChild(panel);

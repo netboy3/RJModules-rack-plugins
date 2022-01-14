@@ -1,5 +1,4 @@
 #include "RJModules.hpp"
-#include "dsp/digital.hpp"
 #include <iostream>
 #include <cmath>
 #include <sstream>
@@ -166,7 +165,7 @@ struct ChordSeq : Module {
 			this->index = 0;
 	}
 
-	void step() override {
+	void process(const ProcessArgs& args) override {
 		// Run
 		if (runningTrigger.process(params[RUN_PARAM].value)) {
 			running = !running;
@@ -201,14 +200,9 @@ struct ChordSeq : Module {
 		float _input_shape;
 	    float _pitch;
 	    float _octave;
-	    float _shape;
-	    float _three_interval;
-	    float _five_interval;
-	    float _seven_interval;
-
-	    float _out_one;
-	    float _out_three;
-	    float _out_five;
+	    float _three_interval = 0.0f;
+	    float _five_interval = 0.0f;
+	    float _seven_interval = 0.0f;
 
 		// Gate buttons and Displays
 		for (int i = 0; i < 8; i++) {
@@ -216,15 +210,15 @@ struct ChordSeq : Module {
 				gates[i] = !gates[i];
 			}
 			outputs[GATE_OUTPUT + i].value = (running && gateIn && i == index && gates[i]) ? 10.0f : 0.0f;
-			lights[GATE_LIGHTS + i].setBrightnessSmooth((gateIn && i == index) ? (gates[i] ? 1.f : 0.33) : (gates[i] ? 0.66 : 0.0));
+			lights[GATE_LIGHTS + i].setBrightnessSmooth((gateIn && i == index) ? (gates[i] ? 1.f : 0.33) : (gates[i] ? 0.66 : 0.0), args.sampleTime);
 
 		    _input_pitch = params[ROW2_PARAM + i].value;
 		    _input_shape = params[ROW3_PARAM + i].value;
 		    _pitch = (int) _input_pitch % (int) 12;
 		    _octave = int(_input_pitch / 12);
 
-			char* pitch = NULL;
-			char* shape = NULL;
+			std::string pitch = "";
+			std::string shape = "";
 		    switch ((int) _pitch) {
 		        case 0: {
 		            pitch = "C";
@@ -311,14 +305,14 @@ struct ChordSeq : Module {
 		        }
 		    }
 
-			chord_values[i] = std::string(pitch) + std::string(shape);
+			chord_values[i] = pitch + shape;
 
 			if(i == index){
 				if(!gates[i]){
-					_root_cv = NULL;
-					_third_cv = NULL;
-					_fifth_cv = NULL;
-					_seventh_cv = NULL;
+					_root_cv = 0.0f;
+					_third_cv = 0.0f;
+					_fifth_cv = 0.0f;
+					_seventh_cv = 0.0f;
 				}
 				else {
 				    float _root_frequency = semitoneToFrequency(referenceSemitone + 12 * (_octave - referenceOctave) + (_pitch - referencePitch));
@@ -345,7 +339,7 @@ struct ChordSeq : Module {
 
 		// outputs[GATES_OUTPUT].value = (gateIn && gates[index]) ? 10.0f : 0.0f;
 		lights[RUNNING_LIGHT].value = (running);
-		lights[RESET_LIGHT].setBrightnessSmooth(resetTrigger.isHigh());
+		lights[RESET_LIGHT].setBrightnessSmooth(resetTrigger.isHigh(), args.sampleTime);
 		lights[GATES_LIGHT].value = outputs[GATES_OUTPUT].value / 10.0f;
 		lights[ROW_LIGHTS].value = outputs[ROW1_OUTPUT].value / 10.0f;
 		lights[ROW_LIGHTS + 1].value = outputs[ROW2_OUTPUT].value / 10.0f;

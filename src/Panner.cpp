@@ -28,7 +28,7 @@ struct Panner: Module {
 void Panner::step() {
     float ch1 = inputs[CH1_INPUT].value;
 
-    float combined_input = params[CH1_PARAM].value * clamp(inputs[CH1_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float combined_input = params[CH1_PARAM].value * clamp(inputs[CH1_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
 
     float left_percent = combined_input;
     float right_percent = 1 - combined_input;
@@ -47,7 +47,7 @@ PannerWidget::PannerWidget(Panner *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Panner.svg")));
         addChild(panel);

@@ -12,7 +12,7 @@ struct PCRoundLargeBlackSnapKnob : RoundLargeBlackKnob
 {
     PCRoundLargeBlackSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -114,17 +114,17 @@ void PlayableChord::step() {
         }
 
         int octave = frequencyToSemitone(note) / 12;
-        int octave_mod = params[OCTAVE_PARAM].value * clamp(inputs[OCTAVE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;
+        int octave_mod = params[OCTAVE_PARAM].value * clamp(inputs[OCTAVE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;
 
         float _input_pitch = note;
         float _pitch = (int) _input_pitch % (int) 12;
         float _octave = octave + octave_mod;
 
-        float _shape = params[SHAPE_PARAM].value * clamp(inputs[SHAPE_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;
-        float _three_interval;
-        float _five_interval;
-        float _seven_interval;
-        char* shape = NULL;
+        float _shape = params[SHAPE_PARAM].value * clamp(inputs[SHAPE_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;
+        float _three_interval = 0.0f;
+        float _five_interval = 0.0f;
+        float _seven_interval = 0.0f;
+        std::string shape = "";
         // via https://en.wikibooks.org/wiki/Music_Theory/PlayableChords
         switch ((int) _shape) {
             case 0: {
@@ -177,8 +177,8 @@ void PlayableChord::step() {
         outputs[FIVE_OUTPUT].value = _fifth_cv;
         outputs[SEVEN_OUTPUT].value = _seventh_cv;
 
-        char* pitch = NULL;
-        char* sharpFlat = NULL;
+        std::string pitch = "";
+        std::string sharpFlat = "";
         switch ((int) _pitch) {
             case 0: {
                 pitch = "C";
@@ -235,7 +235,7 @@ void PlayableChord::step() {
             }
         }
 
-        chord_name = std::string(pitch) + std::to_string((int)_octave) + std::string(shape);
+        chord_name = pitch + std::to_string((int)_octave) + shape;
         step_count = 0;
     } else{
         step_count++;
@@ -286,7 +286,7 @@ PlayableChordWidget::PlayableChordWidget(PlayableChord *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/PlayableChord.svg")));
         addChild(panel);

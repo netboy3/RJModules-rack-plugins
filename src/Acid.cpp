@@ -35,13 +35,13 @@ using namespace std;
 
 struct AcidRoundLargeBlackKnob : RoundLargeBlackKnob {
     AcidRoundLargeBlackKnob() {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AcidRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AcidRoundLargeBlackKnob.svg")));
     }
 };
 
 struct AcidRoundLargeHappyKnob : RoundLargeBlackKnob {
     AcidRoundLargeHappyKnob() {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AcidRoundLargeHappyKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/AcidRoundLargeHappyKnob.svg")));
     }
 };
 
@@ -264,10 +264,10 @@ struct Acid : Module {
         */
 
         // OSC1
-        float wave1 = params[WAVE_1_PARAM].value * clamp(inputs[WAVE_1_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+        float wave1 = params[WAVE_1_PARAM].value * clamp(inputs[WAVE_1_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
         osc1->setInputs(voct, 0.0, 0.0, 0.f, -2.f);
         osc1->process();
-        float osc1_out;
+        float osc1_out = 0.0f;
         switch(int(wave1)){
             // Sample
             case 0:
@@ -302,10 +302,10 @@ struct Acid : Module {
         }
 
         // OSC2
-        float wave2 = params[WAVE_2_PARAM].value * clamp(inputs[WAVE_2_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);;
+        float wave2 = params[WAVE_2_PARAM].value * clamp(inputs[WAVE_2_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);;
         osc2->setInputs(voct2, 0.0, 0.0, 0.f, -2.f);
         osc2->process();
-        float osc2_out;
+        float osc2_out = 0.0f;
         switch(int(wave2)){
 
             // Sin
@@ -331,12 +331,12 @@ struct Acid : Module {
         }
 
         // Mix
-        float wave_mixed = ((1 - params[WAVE_MIX_PARAM].value * clamp(inputs[WAVE_MIX_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f)) * osc1_out) + ((params[WAVE_MIX_PARAM].value * clamp(inputs[WAVE_MIX_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f)) * osc2_out);
+        float wave_mixed = ((1 - params[WAVE_MIX_PARAM].value * clamp(inputs[WAVE_MIX_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f)) * osc1_out) + ((params[WAVE_MIX_PARAM].value * clamp(inputs[WAVE_MIX_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f)) * osc2_out);
 
         /*
             Envelope
         */
-        float shape = params[ENV_SHAPE_PARAM].value * clamp(inputs[ENV_SHAPE_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+        float shape = params[ENV_SHAPE_PARAM].value * clamp(inputs[ENV_SHAPE_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
         float minTime = 1e-2;
         env_in = 0.0f;
 
@@ -362,7 +362,7 @@ struct Acid : Module {
             }
         }
         else if (delta < 0) {
-            float fallCv = params[ENV_REL_PARAM].value * clamp(inputs[ENV_REL_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f) + 0.0 / 10.0;
+            float fallCv = params[ENV_REL_PARAM].value * clamp(inputs[ENV_REL_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f) + 0.0 / 10.0;
             fallCv = clamp(fallCv, 0.0, 1.0);
             float fall = minTime * powf(2.0, fallCv * 10.0);
             env_out += shapeDelta(delta, fall, shape) / APP->engine->getSampleRate();
@@ -379,7 +379,7 @@ struct Acid : Module {
             VCA
             via https://github.com/VCVRack/AudibleInstruments/blob/dd25b1785c2e67f19824fad97527c97c5d779685/src/Veils.cpp
         */
-        float vca_out = env_out * params[ENV_AMT_PARAM].value * clamp(inputs[ENV_AMT_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+        float vca_out = env_out * params[ENV_AMT_PARAM].value * clamp(inputs[ENV_AMT_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
         outputs[ENV_OUTPUT].value = vca_out;
 
         /*
@@ -388,20 +388,20 @@ struct Acid : Module {
 
         // Stage 1
         //float cutoff = pow(2.0f, rescale(clamp(params[FILTER_CUT_PARAM].value + quadraticBipolar(params[FILTER_FM_2_PARAM].value) * 0.1f * inputs[CUTOFF_INPUT2].value + quadraticBipolar(params[FILTER_FM_PARAM].value) * 0.1f * inputs[CUTOFF_INPUT].value / 5.0f, 0.0f , 1.0f), 0.0f, 1.0f, 4.5f, 13.0f));
-        float cutoff = pow(2.0f, rescale(clamp(params[FILTER_CUT_PARAM].value * clamp(inputs[FILTER_CUT_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f) + rack::dsp::quadraticBipolar(params[FILTER_FM_2_PARAM].value * clamp(inputs[FILTER_FM_2_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f)  ) * 0.1f * vca_out + rack::dsp::quadraticBipolar(params[FILTER_FM_1_PARAM].value * clamp(inputs[FILTER_FM_1_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f) ) * 0.1f * vca_out / 5.0f, 0.0f , 1.0f), 0.0f, 1.0f, 4.5f, 13.0f)) ;
+        float cutoff = pow(2.0f, rescale(clamp(params[FILTER_CUT_PARAM].value * clamp(inputs[FILTER_CUT_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f) + rack::dsp::quadraticBipolar(params[FILTER_FM_2_PARAM].value * clamp(inputs[FILTER_FM_2_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f)  ) * 0.1f * vca_out + rack::dsp::quadraticBipolar(params[FILTER_FM_1_PARAM].value * clamp(inputs[FILTER_FM_1_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f) ) * 0.1f * vca_out / 5.0f, 0.0f , 1.0f), 0.0f, 1.0f, 4.5f, 13.0f)) ;
         //float q = 10.0f * clamp(params[FILTER_Q_PARAM].value + inputs[Q_INPUT].value / 5.0f, 0.1f, 1.0f);
 
         // I don't love this, but okay..
-        //cutoff = cutoff + (2000 * clamp(inputs[FILTER_CUT_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
+        //cutoff = cutoff + (2000 * clamp(inputs[FILTER_CUT_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
 
         // TODO: Find best values for these
-        float q = 40.0f * clamp(params[FILTER_Q_PARAM].value * clamp(inputs[FILTER_Q_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f) / 5.0f, 0.1f, 1.0f);
+        float q = 40.0f * clamp(params[FILTER_Q_PARAM].value * clamp(inputs[FILTER_Q_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f) / 5.0f, 0.1f, 1.0f);
         filter.setParams(cutoff, q, APP->engine->getSampleRate());
         float in = wave_mixed / 5.0f;
 
         // Stage 2
         in = clamp(in, -5.0f, 5.0f) * 0.2f;
-        float a_shape = params[FILTER_DRIVE_PARAM].value * clamp(inputs[FILTER_DRIVE_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+        float a_shape = params[FILTER_DRIVE_PARAM].value * clamp(inputs[FILTER_DRIVE_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
         a_shape = clamp(a_shape, -5.0f, 5.0f) * 0.2f;
         a_shape *= 0.99f;
         const float a_shapeB = (1.0 - a_shape) / (1.0 + a_shape);
@@ -482,8 +482,6 @@ struct Acid : Module {
                 decaying = false;
             }
 
-            bool sustaining = isNear(env, sustain, 1e-3);
-            bool resting = isNear(env, 0.0f, 1e-3);
             float env_output = 10.0f * env;
 
             /* VCA */

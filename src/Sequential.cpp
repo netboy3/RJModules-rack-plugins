@@ -206,7 +206,6 @@ struct Sequential : Module {
 
     void process(const ProcessArgs &args) override {
 
-        bool gateIn = false;
         bool stepActive = false;
         if (inputs[STEP_INPUT].active) {
             if (clockTrigger.process(inputs[STEP_INPUT].value)) {
@@ -214,7 +213,6 @@ struct Sequential : Module {
                 setIndex(index, stepSize);
                 stepActive = true;
             }
-            gateIn = clockTrigger.isHigh();
         }
 
         // Iterate rows

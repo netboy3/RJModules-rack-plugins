@@ -42,7 +42,7 @@ struct InstroRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     InstroRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
     }
 };
 
@@ -50,7 +50,7 @@ struct InstroRoundBlackSnapKnob : RoundBlackKnob
 {
     InstroRoundBlackSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -155,10 +155,10 @@ struct Instro : Module {
         int  instrument_choice = params[INSTRO_PARAM].value;
 
         // parameters
-        float param_1 = params[PARAM_1].value * rescale(inputs[PARAM_1_CV].normalize(1.0f), 0.f, 5.f, 0.f, 1.f);
-        float param_2 = params[PARAM_2].value * rescale(inputs[PARAM_2_CV].normalize(1.0f), 0.f, 5.f, 0.f, 1.f);
-        float param_3 = params[PARAM_3].value * rescale(inputs[PARAM_3_CV].normalize(1.0f), 0.f, 5.f, 0.f, 1.f);
-        float param_4 = params[PARAM_4].value * rescale(inputs[PARAM_4_CV].normalize(1.0f), 0.f, 5.f, 0.f, 1.f);
+        float param_1 = params[PARAM_1].value * rescale(inputs[PARAM_1_CV].getNormalVoltage(1.0f), 0.f, 5.f, 0.f, 1.f);
+        float param_2 = params[PARAM_2].value * rescale(inputs[PARAM_2_CV].getNormalVoltage(1.0f), 0.f, 5.f, 0.f, 1.f);
+        float param_3 = params[PARAM_3].value * rescale(inputs[PARAM_3_CV].getNormalVoltage(1.0f), 0.f, 5.f, 0.f, 1.f);
+        float param_4 = params[PARAM_4].value * rescale(inputs[PARAM_4_CV].getNormalVoltage(1.0f), 0.f, 5.f, 0.f, 1.f);
 
         // gate
         bool gate_connected = inputs[GATE_INPUT].isConnected();
@@ -737,7 +737,7 @@ struct InstroWidget : ModuleWidget {
     setModule(module);
     box.size = Vec(15*10, 380);
 
-    SVGPanel *panel = new SVGPanel();
+    SvgPanel *panel = new SvgPanel();
     panel->box.size = box.size;
     panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Instro.svg")));
     addChild(panel);

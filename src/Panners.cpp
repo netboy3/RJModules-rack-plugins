@@ -1,6 +1,5 @@
 #include "RJModules.hpp"
 #include <iostream>
-#include "dsp/digital.hpp"
 
 #define NUM_PARAMSS 5
 #define NUM_CHANNELS 10

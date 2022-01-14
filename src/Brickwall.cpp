@@ -14,7 +14,7 @@ struct BrickwallRoundSmallBlackKnob : RoundSmallBlackKnob
 {
     BrickwallRoundSmallBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundSmallBlackKnob.svg")));
     }
 };
 
@@ -87,15 +87,12 @@ struct Brickwall : Module {
             calculated_depth = clamp(params[DEPTH_PARAM].value + inputs[DEPTH_INPUT].value / 10.0f, 0.0f, 10.0f);
         }
         float output = inputs[IN_INPUT].value;
-        float light_value = 0.0;
 
         if(input>calculated_depth){
             output = calculated_depth;
-            light_value = -1.0;
         }
         if(input<calculated_depth*-1){
             output = calculated_depth*-1;
-            light_value = -1.0;
         }
 
         output = output * params[POSTAMP_PARAM].value;

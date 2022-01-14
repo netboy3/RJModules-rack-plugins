@@ -39,13 +39,13 @@ using namespace std;
 
 struct DrumplerRoundLargeBlackKnob : RoundLargeBlackKnob {
     DrumplerRoundLargeBlackKnob() {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DrumplerRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DrumplerRoundLargeBlackKnob.svg")));
     }
 };
 
 struct DrumplerRoundLargeHappyKnob : RoundLargeBlackKnob {
     DrumplerRoundLargeHappyKnob() {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DrumplerRoundLargeHappyKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/DrumplerRoundLargeHappyKnob.svg")));
     }
 };
 
@@ -105,18 +105,6 @@ struct DrumplerSmallStringDisplayWidget : TransparentWidget {
 /*
     Static Functions and Structions
 */
-
-static float shapeDelta(float delta, float tau, float shape) {
-    float lin = sgn(delta) * 10.0 / tau;
-    if (shape < 0.0) {
-        float log = sgn(delta) * 40.0 / tau / (fabsf(delta) + 1.0);
-        return crossfade(lin, log, -shape * 0.95);
-    }
-    else {
-        float exp = M_E * delta / tau;
-        return crossfade(lin, exp, shape * 0.90);
-    }
-}
 
 struct DrumplerMultiFilter
 {
@@ -373,24 +361,16 @@ struct DrumplerWidget : ModuleWidget {
         addChild(createWidget<ScrewSilver>(Vec(box.size.x-30, 365)));
 
         int TOP_BUFFER = 30;
-        int BOTTOM_OFFSET = 45;
         int LEFT_BUFFER = 35;
-        int RIGHT_BUFFER = 50;
-
-        int CV_SIZE = 2;
-        int CV_DIST = 15;
-        int CV_NEG_DIST = 10;
 
         int DISPLAY_SIZE_X = 60;
         int DISPLAY_SIZE_Y = 25;
         int ROW_OFFSET = 35;
         int BANK_OFFSET = 30;
-        int BUTTON_SIZE = 5;
         int KNOB_SIZE = 35;
         int NEG_ROW = -5;
         int NEG_ROW_CV = -2.5;
 
-        int GROUP_OFFSET = 15 + LEFT_BUFFER + DISPLAY_SIZE_X + KNOB_SIZE;
         int SAMPLER_BUFFER = 120;
 
         /*

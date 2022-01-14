@@ -125,7 +125,7 @@ struct Euclidian : Module {
     }
 
     void rotate(std::string &a, int d){
-        if(d>=a.length()){
+        if(d >= static_cast<int>(a.length())){
             return;
         }
         std::rotate(a.begin(), a.begin() + d, a.end());
@@ -173,7 +173,7 @@ struct Euclidian : Module {
         }
 
         if (clockTrigger.process(inputs[CLOCK_INPUT].value)) {
-            if (head >= final_string.length() -1){
+            if (head >= static_cast<int>(final_string.length()) - 1){
                 head = -1;
             }
             head += 1;
@@ -187,7 +187,7 @@ struct Euclidian : Module {
         }
 
         for(int li=0;li<16;li++){
-            if(li>final_string.length()){
+            if(li > static_cast<int>(final_string.length())){
                 lights[PATTERN_LIGHT + li].setBrightness(0);
                 continue;
             }
@@ -276,7 +276,7 @@ struct EuclidianRoundLargeBlackKnob : RoundLargeBlackKnob
 {
     EuclidianRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
     }
 };
 
@@ -284,7 +284,7 @@ struct EuclidianRoundLargeBlackSnapKnob : RoundLargeBlackKnob
 {
     EuclidianRoundLargeBlackSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -295,7 +295,7 @@ struct EuclidianRoundBlackSnapKnob : RoundBlackKnob
 {
     EuclidianRoundBlackSnapKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundLargeBlackKnob.svg")));
         minAngle = -0.83 * M_PI;
         maxAngle = 0.83 * M_PI;
         snap = true;
@@ -311,7 +311,7 @@ struct EuclidianWidget : ModuleWidget {
     setModule(module);
     box.size = Vec(15*10, 380);
 
-    SVGPanel *panel = new SVGPanel();
+    SvgPanel *panel = new SvgPanel();
     panel->box.size = box.size;
     panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Euclidian.svg")));
     addChild(panel);

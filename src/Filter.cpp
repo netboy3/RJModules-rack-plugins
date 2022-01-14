@@ -43,7 +43,7 @@ void Filter::step() {
     dry += 1.0e-6 * (2.0*random::uniform() - 1.0)*1000;
     float mixed = 1.0;
 
-    float param = params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 10.0f);
+    float param = params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 10.0f);
 
     // if param < .5
     //      LPF, 30:8000
@@ -55,8 +55,8 @@ void Filter::step() {
     hpFilter->setFilterType(2);
 
     // todo get from param
-    lpFilter->setResonance(params[RES_PARAM].value * clamp(inputs[RES_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
-    hpFilter->setResonance(params[RES_PARAM].value * clamp(inputs[RES_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
+    lpFilter->setResonance(params[RES_PARAM].value * clamp(inputs[RES_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
+    hpFilter->setResonance(params[RES_PARAM].value * clamp(inputs[RES_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
 
     lpFilter->setSampleRate(APP->engine->getSampleRate());
     hpFilter->setSampleRate(APP->engine->getSampleRate());
@@ -79,7 +79,7 @@ void Filter::step() {
         wet = dry;
     }
 
-    float mix_cv = clamp(inputs[MIX_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float mix_cv = clamp(inputs[MIX_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     mixed = (wet * (params[MIX_PARAM].value * mix_cv)) + (dry * ((1-params[MIX_PARAM].value) * mix_cv));
 
     outputs[CH1_OUTPUT].value = mixed;
@@ -95,7 +95,7 @@ FilterWidget::FilterWidget(Filter *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Filter.svg")));
         addChild(panel);

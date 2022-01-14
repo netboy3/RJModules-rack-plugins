@@ -20,7 +20,7 @@ struct GGRoundLargeBlackKnob : RoundHugeBlackKnob
 {
     GGRoundLargeBlackKnob()
     {
-        setSVG(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
+        setSvg(APP->window->loadSvg(asset::plugin(pluginInstance, "res/KTFRoundHugeBlackKnob.svg")));
     }
 };
 
@@ -87,9 +87,6 @@ struct GravityGlide : Module {
     // Math
     float input = inputs[IN_INPUT].value;
     float damping_force = damping * current_speed;
-    float forceY = M * G - damping_force;
-    float accelerationY = forceY / M;
-
 
     //attempt 2
     // float accelerationY = G*M;///(d*d);

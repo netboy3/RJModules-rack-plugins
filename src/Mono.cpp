@@ -28,7 +28,7 @@ struct Mono : Module {
 
 void Mono::step() {
 
-    float mono_amount = params[MONO_PARAM].value * clamp(inputs[MONO_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float mono_amount = params[MONO_PARAM].value * clamp(inputs[MONO_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     float mono_value = (inputs[CH1_INPUT].value + inputs[CH2_INPUT].value) / 2;
 
     outputs[CH1_OUTPUT].value = (mono_value * mono_amount) + (((1 - mono_amount)) * inputs[CH1_INPUT].value);
@@ -45,7 +45,7 @@ MonoWidget::MonoWidget(Mono *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Mono.svg")));
         addChild(panel);

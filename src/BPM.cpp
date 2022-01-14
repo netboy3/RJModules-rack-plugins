@@ -1,6 +1,5 @@
 #include "RJModules.hpp"
 
-#include "dsp/digital.hpp"
 #include <iostream>
 #include <cmath>
 #include <sstream>
@@ -117,7 +116,7 @@ void BPM::step() {
     bool bMainClockTrig = false;
 
     // new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
-    float bpm_val = params[BPM_PARAM].value * clamp(inputs[CH1_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float bpm_val = params[BPM_PARAM].value * clamp(inputs[CH1_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
     float mapped_bpm = ((bpm_val - 0.0) / (1.0 - 0.0) ) * (600.0 - 40.0) + 40.0;
 
     m_fBPM = mapped_bpm;
@@ -164,7 +163,7 @@ BPMWidget::BPMWidget(BPM *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BPM.svg")));
         addChild(panel);

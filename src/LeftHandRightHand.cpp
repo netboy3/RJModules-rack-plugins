@@ -1,8 +1,6 @@
-#include "plugin.hpp"
 #include <algorithm>
 #include "RJModules.hpp"
 #include "common.hpp"
-#include "dsp/digital.hpp"
 #include <iostream>
 #include <cmath>
 #include <sstream>
@@ -640,7 +638,7 @@ struct LeftHandRightHandWidget : ModuleWidget {
         setModule(module);
 
         box.size = Vec(15*8, 380);
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(Svg::load(asset::plugin(pluginInstance, "res/LeftHandRightHand.svg")));
         addChild(panel);

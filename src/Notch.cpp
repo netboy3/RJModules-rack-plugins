@@ -44,9 +44,9 @@ void Notch::step() {
 
     notchFilter->setFilterType(5);
 
-    notchFilter->setCutoffFreq(params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
-    notchFilter->setShelfGain(params[VOL_PARAM].value * clamp(inputs[VOL_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
-    notchFilter->setResonance(params[WIDTH_PARAM].value * clamp(inputs[WIDTH_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f));
+    notchFilter->setCutoffFreq(params[FREQ_PARAM].value * clamp(inputs[FREQ_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
+    notchFilter->setShelfGain(params[VOL_PARAM].value * clamp(inputs[VOL_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
+    notchFilter->setResonance(params[WIDTH_PARAM].value * clamp(inputs[WIDTH_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f));
     notchFilter->setSampleRate(APP->engine->getSampleRate());
 
     wet = notchFilter->processAudioSample(dry, 1);
@@ -63,7 +63,7 @@ NotchWidget::NotchWidget(Notch *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Notch.svg")));
         addChild(panel);

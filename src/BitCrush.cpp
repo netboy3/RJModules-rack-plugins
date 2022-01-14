@@ -34,8 +34,8 @@ struct BitCrush: Module {
 void BitCrush::step() {
 	float ch1 = inputs[CH1_INPUT].value;
 
-	float combined_input = params[CH1_PARAM].value * clamp(inputs[CH1_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
-	float combined_crush_floor = params[CH2_PARAM].value * clamp(inputs[CH2_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+	float combined_input = params[CH1_PARAM].value * clamp(inputs[CH1_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
+	float combined_crush_floor = params[CH2_PARAM].value * clamp(inputs[CH2_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
 
 	// new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
 	float mapped_crush_floor = ((combined_crush_floor - 0.0) / (1.0 - 0.0) ) * (32.0 - 1.0) + 1.0;
@@ -60,7 +60,7 @@ BitCrushWidget::BitCrushWidget(BitCrush *module) {
 	box.size = Vec(15*10, 380);
 
 	{
-		SVGPanel *panel = new SVGPanel();
+		SvgPanel *panel = new SvgPanel();
 		panel->box.size = box.size;
 		panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/BitCrush.svg")));
 		addChild(panel);

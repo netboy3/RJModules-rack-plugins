@@ -35,9 +35,9 @@ struct Floats: Module {
 #define ROUND(f) ((float)((f > 0.0) ? floor(f + 0.5) : ceil(f - 0.5)))
 
 void Floats::step() {
-    float combined_input_1 = params[CH1_PARAM].value * clamp(inputs[CH1_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
-    float combined_input_2 = params[CH2_PARAM].value * clamp(inputs[CH2_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
-    float combined_input_3 = params[CH3_PARAM].value * clamp(inputs[CH3_CV_INPUT].normalize(10.0f) / 10.0f, 0.0f, 1.0f);
+    float combined_input_1 = params[CH1_PARAM].value * clamp(inputs[CH1_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
+    float combined_input_2 = params[CH2_PARAM].value * clamp(inputs[CH2_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
+    float combined_input_3 = params[CH3_PARAM].value * clamp(inputs[CH3_CV_INPUT].getNormalVoltage(10.0f) / 10.0f, 0.0f, 1.0f);
 
     // new_value = ( (old_value - old_min) / (old_max - old_min) ) * (new_max - new_min) + new_min
     float mapped_input_1 = ((combined_input_1 - 0.0) / (1.0 - 0.0) ) * (12.0 - -12.0) + -12.0;
@@ -59,7 +59,7 @@ FloatsWidget::FloatsWidget(Floats *module) {
     box.size = Vec(15*10, 380);
 
     {
-        SVGPanel *panel = new SVGPanel();
+        SvgPanel *panel = new SvgPanel();
         panel->box.size = box.size;
         panel->setBackground(APP->window->loadSvg(asset::plugin(pluginInstance, "res/Floats.svg")));
         addChild(panel);
