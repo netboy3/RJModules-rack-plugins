@@ -3,92 +3,84 @@ Succccccccccccccc
 
 */
 
-#include "Bitmap.hpp"
+#include "RJModules.hpp"
 
 using namespace rack;
 
-// Forward-declare the Plugin, defined in Template.cpp
-extern Plugin *pluginInstance;
+#define NUM_OF_IMAGES 2
 
-// Forward-declare each Model, defined in each module source file
-extern Model *modelBlank_1HP;
+struct Succulent : Module {
+    int Style = 0;
 
-struct BlankBaseWidget : ModuleWidget {
-    static constexpr int LISTSIZE = 2;
-    int selected = 0;
-    std::string fileName[LISTSIZE];
-    BitMap *bmp;
-    std::string FileName(std::string tpl, int templateSize) {
-        char workingSpace[100];
-        snprintf(workingSpace, 100, tpl.c_str(), templateSize);
-        return asset::plugin(pluginInstance, workingSpace);
-    }
-
-    BlankBaseWidget(Module *module) : ModuleWidget() {
-        setModule(module);
-    }
-    void appendContextMenu(Menu *menu) override;
-    void loadBitmap() {
-        bmp = createWidget<BitMap>(Vec(0,0));
-        bmp->box.size.x = box.size.x;
-        bmp->box.size.y = box.size.y;
-        bmp->path = fileName[selected];
-        addChild(bmp);
-    }
-    void setBitmap(int sel) {
-        if (selected == sel)
-            return;
-        selected = clamp(sel, 0, LISTSIZE - 1);
-        removeChild(bmp);
-        delete bmp;
-        loadBitmap();
-    }
-    json_t *toJson() {
-        json_t *rootJ = ModuleWidget::toJson();
-        json_object_set_new(rootJ, "style", json_real(selected));
+    json_t *dataToJson() override {
+        json_t *rootJ = json_object();
+        json_object_set_new(rootJ, "style", json_integer(Style));
         return rootJ;
     }
-    void fromJson(json_t *rootJ) {
-        ModuleWidget::fromJson(rootJ);
-        int sel = selected;
-        json_t *styleJ = json_object_get(rootJ, "style");
-        if (styleJ)
-            sel = json_number_value(styleJ);
-        setBitmap(sel);
-    }
-
-};
-
-struct BitmapMenuItem : MenuItem {
-    BlankBaseWidget *w;
-    int value;
-    void onAction(const event::Action &e) override {
-        w->setBitmap(value);
+    void dataFromJson(json_t *rootJ) override {
+        json_t *StyleJ = json_object_get(rootJ, "style");
+        if (StyleJ)
+            Style = json_integer_value(StyleJ);
+        if (Style >= NUM_OF_IMAGES || Style < 0)
+            Style = 0;
     }
 };
 
-void BlankBaseWidget::appendContextMenu(Menu *menu) {
-    menu->addChild(new MenuEntry);
-    BitmapMenuItem *m = createMenuItem<BitmapMenuItem>("Succccc");
-    m->w = this;
-    m->value = 0;
-    m->rightText = CHECKMARK(selected==m->value);
-    menu->addChild(m);
-    m = createMenuItem<BitmapMenuItem>("Meow");
-    m->w = this;
-    m->value = 1;
-    m->rightText = CHECKMARK(selected==m->value);
-    menu->addChild(m);
+struct SucculentPanel : TransparentWidget {
+    std::string *imageListPtr;
+    int *stylePtr;
+
+    void draw(const DrawArgs &args) override {
+        std::shared_ptr<Image> image = APP->window->loadImage(*(imageListPtr + *stylePtr));
+        nvgBeginPath(args.vg);
+        nvgRect(args.vg, 0.0, 0.0, box.size.x, box.size.y);
+        if (image) {
+            NVGpaint paint = nvgImagePattern(args.vg, 0.0, 0.0, box.size.x, box.size.y, 0.0, image->handle, 1.0);
+            nvgFillPaint(args.vg, paint);
+            nvgFill(args.vg);
+        }
+        Widget::draw(args);
+    }
+};
+
+struct SucculentWidget : ModuleWidget {
+    SucculentPanel *imagePanel;
+    std::string imageList[NUM_OF_IMAGES];
+    std::string *imageListPtr = imageList;
+    int defaultStyle = 0;
+
+    void appendContextMenu(Menu *menu) override {
+        Succulent *succc = dynamic_cast<Succulent *>(module);
+        assert(succc);
+        menu->addChild(construct<MenuEntry>());
+        menu->addChild(construct<MenuLabel>(&MenuLabel::text, "Style"));
+        menu->addChild(createCheckMenuItem(
+            "Succccc", "",
+            [=]() { return succc->Style == 0; },
+            [=]() { succc->Style = 0; }));
+        menu->addChild(createCheckMenuItem(
+            "Meow", "",
+            [=]() { return succc->Style == 1; },
+            [=]() { succc->Style = 1; }));
+    }
+
+    SucculentWidget(Succulent *module);
+};
+
+SucculentWidget::SucculentWidget(Succulent *module) {
+    setModule(module);
+    imageList[0] = asset::plugin(pluginInstance, "res/Blank_20HP.png");
+    imageList[1] = asset::plugin(pluginInstance, "res/Zen_20HP.png");
+    box.size = Vec(20 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT);
+    imagePanel = new SucculentPanel();
+    imagePanel->box.size = box.size;
+    imagePanel->imageListPtr = imageListPtr;
+    if (module) {
+        imagePanel->stylePtr = &module->Style;
+    } else {
+        imagePanel->stylePtr = &defaultStyle;
+    }
+    addChild(imagePanel);
 }
 
-template<int x>
-struct SucculentWidget : BlankBaseWidget {
-    SucculentWidget(Module *module) : BlankBaseWidget(module) {
-        fileName[0] = FileName("res/Blank_%dHP.png", x);
-        fileName[1] = FileName("res/Zen_%dHP.png", x);
-        box.size = Vec(RACK_GRID_WIDTH * x, RACK_GRID_HEIGHT);
-        loadBitmap();
-    }
-};
-
-Model *modelSucculent = createModel<Module, SucculentWidget<20>>("Succulent");
+Model *modelSucculent = createModel<Succulent, SucculentWidget>("Succulent");
